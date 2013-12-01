@@ -9,17 +9,20 @@ import java.util.List;
 
 import by.gsu.segg3r.rental.connection.DbConnection;
 import by.gsu.segg3r.rental.exceptions.DaoException;
-import by.gsu.segg3r.rental.ifaces.IFirmDao;
+import by.gsu.segg3r.rental.ifaces.IItemDao;
 import by.gsu.segg3r.rental.model.Firm;
 
-public class FirmDaoImplDb implements IFirmDao {
+public class FirmDaoImplDb implements IItemDao<Firm> {
 
 	private static final String FIRM_BY_ID_QUERY = "select Название, Адрес from "
 			+ "ФирмаПроизводитель where id = ?";
 	private static final String FIRM_LIST_QUERY = "select id, Название, Адрес from ФирмаПроизводитель";
+	private static final String ADD_FIRM_QUERY = "insert into ФирмаПроизводитель(Название, Адрес) values(?, ?)";
+	private static final String UPDATE_FIRM_QUERY = "update ФирмаПроизводитель set Название = ?, Адрес = ? where id = ?";
+	private static final String DELETE_FIRM_QUERY = "delete from ФирмаПроизводитель where id = ?";
 
 	@Override
-	public Firm getFirmById(int id) throws DaoException {
+	public Firm getItemById(int id) throws DaoException {
 		try {
 			Connection cn = null;
 			PreparedStatement st = null;
@@ -50,7 +53,7 @@ public class FirmDaoImplDb implements IFirmDao {
 	}
 
 	@Override
-	public List<Firm> getFirms() throws DaoException {
+	public List<Firm> getItems() throws DaoException {
 		try {
 			Connection cn = null;
 			PreparedStatement st = null;
@@ -83,5 +86,100 @@ public class FirmDaoImplDb implements IFirmDao {
 			throw new DaoException("Ошибка чтения списка фирм", e);
 		}
 	}
+
+	@Override
+	public void addItem(Firm firm) throws DaoException {
+		try {
+			Connection cn = null;
+			PreparedStatement st = null;
+			ResultSet rs = null;
+
+			try {
+				cn = DbConnection.getConnection();
+				
+				st = cn.prepareStatement(ADD_FIRM_QUERY);
+				st.setString(1, firm.getName());
+				st.setString(2, firm.getAddress());
+				
+				st.executeUpdate();
+
+			} finally {
+				DbConnection.closeResultSets(rs);
+				DbConnection.closeStatements(st);
+				DbConnection.closeConnection(cn);
+			}
+		} catch (SQLException e) {
+			throw new DaoException("Ошибка добавления фирмы", e);
+		}
+	}
+
+	public void changeItem(Firm firm) throws DaoException {
+		try {
+			Connection cn = null;
+			PreparedStatement st = null;
+
+			try {
+				cn = DbConnection.getConnection();
+				
+				st = cn.prepareStatement(UPDATE_FIRM_QUERY);
+				st.setString(1, firm.getName());
+				st.setString(2, firm.getAddress());
+				st.setInt(3, firm.getId());
+				
+				st.executeUpdate();
+
+			} finally {
+				DbConnection.closeStatements(st);
+				DbConnection.closeConnection(cn);
+			}
+		} catch (SQLException e) {
+			throw new DaoException("Ошибка изменение данных о фирме", e);
+		}
+	}
+
+	@Override
+	public void deleteItem(Firm firm) throws DaoException {
+		try {
+			Connection cn = null;
+			PreparedStatement st = null;
+
+			try {
+				cn = DbConnection.getConnection();
+				
+				st = cn.prepareStatement(DELETE_FIRM_QUERY);
+				st.setInt(1, firm.getId());
+				
+				st.execute();
+
+			} finally {
+				DbConnection.closeStatements(st);
+				DbConnection.closeConnection(cn);
+			}
+		} catch (SQLException e) {
+			throw new DaoException("Ошибка удаления данных о фирме", e);
+		}
+	}
+
+	@Override
+	public String[] getTableHeader() {
+		return new String[] {"Название", "Адрес филиала"};
+	}
+
+	@Override
+	public String[] getItemTableRepresentation(Firm firm) {
+		return new String[] {firm.getName(), firm.getAddress()};
+	}
+
+	@Override
+	public Firm getNewItem() {
+		return new Firm();
+	}
+
+	@Override
+	public void setItemFields(Firm item, String[] values) {
+		item.setName(values[0]);
+		item.setAddress(values[1]);
+	}
+
 
 }

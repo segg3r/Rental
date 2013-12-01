@@ -12,10 +12,7 @@ public interface IItemDao<T> {
 	void changeItem(T item) throws DaoException;
 	void deleteItem(T item) throws DaoException;
 	
-	String[] getTableHeader();
-	String[] getItemTableRepresentation(T item);
-	void setItemFields(T item, String[] values);
-	
+	IItemTableRepresentation<T> getItemTableRepresentation(T item);
 	T getNewItem();
 	
 }

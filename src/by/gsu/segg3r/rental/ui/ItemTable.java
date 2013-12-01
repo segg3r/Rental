@@ -8,6 +8,8 @@ import javax.swing.table.DefaultTableModel;
 
 import by.gsu.segg3r.rental.exceptions.DaoException;
 import by.gsu.segg3r.rental.ifaces.IItemDao;
+import by.gsu.segg3r.rental.ifaces.IItemTableRepresentation;
+import by.gsu.segg3r.rental.ifaces.IItemUiStrings;
 
 public class ItemTable<T> extends JTable {
 
@@ -15,18 +17,20 @@ public class ItemTable<T> extends JTable {
 
 	private List<T> items;
 	private IItemDao<T> itemDao;
+	private IItemUiStrings<T> uiStrings;
 	private DefaultTableModel model;
 
 	public ItemTable() {
 		super();
 	}
 
-	public ItemTable(IItemDao<T> itemDao) throws DaoException {
+	public ItemTable(IItemDao<T> itemDao, IItemUiStrings<T> uiStrings) throws DaoException {
 		super();
 		this.itemDao = itemDao;
+		this.uiStrings = uiStrings;
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.model = new DefaultTableModel(new Object[][] {},
-				itemDao.getTableHeader());
+				uiStrings.getTableHeader());
 		this.setModel(model);
 
 		resetTable();
@@ -46,13 +50,14 @@ public class ItemTable<T> extends JTable {
 
 		items = itemDao.getItems();
 		for (T item : items) {
-			model.addRow(itemDao.getItemTableRepresentation(item));
+			IItemTableRepresentation<T> itemTableRep = itemDao.getItemTableRepresentation(item);
+			model.addRow(itemTableRep.getStringFields());
 		}
 	}
 
 	public void addItem() throws DaoException {
-		T item = new ItemDialog<T>(null, "Добавить предмет", itemDao,
-				itemDao.getNewItem()).showDialog();
+		T item = new ItemDialog<T>(uiStrings.getAddItemHeader(), uiStrings,
+				itemDao.getItemTableRepresentation(itemDao.getNewItem())).showDialog();
 		if (item != null) {
 			itemDao.addItem(item);
 			resetTable();
@@ -60,8 +65,8 @@ public class ItemTable<T> extends JTable {
 	}
 
 	public void changeItem() throws DaoException {
-		T item = new ItemDialog<T>(null, "Изменить предмет", itemDao,
-				getSelectedItem()).showDialog();
+		T item = new ItemDialog<T>(uiStrings.getChangeItemHeader(), uiStrings,
+				itemDao.getItemTableRepresentation(getSelectedItem())).showDialog();
 		if (item != null) {
 			itemDao.changeItem(item);
 			resetTable();

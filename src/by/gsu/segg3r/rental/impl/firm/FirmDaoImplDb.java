@@ -1,4 +1,4 @@
-package by.gsu.segg3r.rental.impl;
+package by.gsu.segg3r.rental.impl.firm;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,6 +10,7 @@ import java.util.List;
 import by.gsu.segg3r.rental.connection.DbConnection;
 import by.gsu.segg3r.rental.exceptions.DaoException;
 import by.gsu.segg3r.rental.ifaces.IItemDao;
+import by.gsu.segg3r.rental.ifaces.IItemTableRepresentation;
 import by.gsu.segg3r.rental.model.Firm;
 
 public class FirmDaoImplDb implements IItemDao<Firm> {
@@ -161,25 +162,16 @@ public class FirmDaoImplDb implements IItemDao<Firm> {
 	}
 
 	@Override
-	public String[] getTableHeader() {
-		return new String[] {"Название", "Адрес филиала"};
-	}
-
-	@Override
-	public String[] getItemTableRepresentation(Firm firm) {
-		return new String[] {firm.getName(), firm.getAddress()};
-	}
-
-	@Override
 	public Firm getNewItem() {
 		return new Firm();
 	}
 
 	@Override
-	public void setItemFields(Firm item, String[] values) {
-		item.setName(values[0]);
-		item.setAddress(values[1]);
+	public IItemTableRepresentation<Firm> getItemTableRepresentation(Firm item) {
+		return new FirmTableRepresentation(item);
 	}
+
+
 
 
 }

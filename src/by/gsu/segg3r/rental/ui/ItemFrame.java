@@ -13,6 +13,7 @@ import javax.swing.border.EmptyBorder;
 
 import by.gsu.segg3r.rental.exceptions.DaoException;
 import by.gsu.segg3r.rental.ifaces.IItemDao;
+import by.gsu.segg3r.rental.ifaces.IItemUiStrings;
 import by.gsu.segg3r.rental.ui.util.UiErrorHandler;
 
 public class ItemFrame<T> extends JFrame {
@@ -25,19 +26,21 @@ public class ItemFrame<T> extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public ItemFrame(IItemDao<T> itemDao) {
+	public ItemFrame(IItemDao<T> itemDao, IItemUiStrings<T> uiStrings) {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 451, 260);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
+		
+		setTitle(uiStrings.getFrameHeader());
 
 		JScrollPane scrollPane = new JScrollPane();
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 
 		try {
-			itemTable = new ItemTable<T>(itemDao);
+			itemTable = new ItemTable<T>(itemDao, uiStrings);
 		} catch (DaoException e) {
 			UiErrorHandler.handleError(e.getMessage());
 		}

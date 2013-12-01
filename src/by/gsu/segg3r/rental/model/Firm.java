@@ -44,5 +44,13 @@ public class Firm {
 	public String toString() {
 		return id + ";" + name + ";" + address;
 	}
+	
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!(obj instanceof Firm)) return false;
+		
+		Firm firm = (Firm) obj;
+		return id == firm.id;
+	}
 
 }

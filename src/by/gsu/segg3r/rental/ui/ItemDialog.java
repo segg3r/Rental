@@ -2,37 +2,38 @@ package by.gsu.segg3r.rental.ui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import by.gsu.segg3r.rental.ifaces.IItemDao;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import by.gsu.segg3r.rental.ifaces.IItemField;
+import by.gsu.segg3r.rental.ifaces.IItemTableRepresentation;
+import by.gsu.segg3r.rental.ifaces.IItemUiStrings;
 
 public class ItemDialog<T> extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 
+	private T item;
 	private final JPanel contentPanel = new JPanel();
 
-	private T item;
-	private IItemDao<T> itemDao;
-	private JTextField[] textFields;
+	private IItemTableRepresentation<T> itemTableRepresentation;
 
 	/**
 	 * Create the dialog.
 	 */
-	public ItemDialog(JFrame owner, String title, IItemDao<T> itemDao, T item) {
-		super(owner, true);
-		this.item = item;
-		this.itemDao = itemDao;
-
+	public ItemDialog(String title, IItemUiStrings<T> uiStrings, IItemTableRepresentation<T> itemTableRepresentation) {
+		super((JFrame) null, true);
+		this.itemTableRepresentation = itemTableRepresentation;
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		
 		setBounds(100, 100, 345, 188);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -41,40 +42,34 @@ public class ItemDialog<T> extends JDialog {
 
 		setTitle(title);
 
-		initializeFields(itemDao, item);
-		initializeButtonPanel();
+		initializeFields(uiStrings, itemTableRepresentation);
+		initializeButtonPanel(uiStrings);
 	}
 
-	protected void initializeFields(IItemDao<T> itemDao, T item) {
-		String[] tableHeader = itemDao.getTableHeader();
-		String[] itemTableRepresentation = itemDao
-				.getItemTableRepresentation(item);
+	protected void initializeFields(IItemUiStrings<T> uiStrings, IItemTableRepresentation<T> itemTableRepresentation) {
+		String[] tableHeader = uiStrings.getTableHeader();
+		IItemField<?>[] fields = itemTableRepresentation.getFields();
 
-		textFields = new JTextField[tableHeader.length];
 		for (int i = 0; i < tableHeader.length; i++) {
-			JLabel label = new JLabel(tableHeader[i]);
-			label.setBounds(10, 11 + i * 20, 100, 14);
+			JLabel label = new JLabel(tableHeader[i] + ":");
+			label.setBounds(10, 11 + i * 24, 100, 14);
 			contentPanel.add(label);
 
-			JTextField textField = new JTextField(itemTableRepresentation[i]);
-			textField.setBounds(120, 8 + i * 20, 199, 20);
-			contentPanel.add(textField);
-			textField.setColumns(10);
-
-			textFields[i] = textField;
+			JComponent component = fields[i].getComponent();
+			component.setBounds(120, 8 + i * 24, 199, 20);
+			contentPanel.add(component);
 		}
 	}
 
-	protected void initializeButtonPanel() {
+	protected void initializeButtonPanel(final IItemUiStrings<T> uiStrings) {
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 		JButton okButton = new JButton("Принять");
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String[] fieldsValues = getFieldsValues();
-				itemDao.setItemFields(item, fieldsValues);
-				
+				itemTableRepresentation.setItemFields();
+				item = itemTableRepresentation.getItem();
 				closeDialog();
 			}
 		});
@@ -100,13 +95,5 @@ public class ItemDialog<T> extends JDialog {
 	private void closeDialog() {
 		setVisible(false);
 		dispose();
-	}
-	
-	private String[] getFieldsValues() {
-		String[] fieldsValues = new String[textFields.length];
-		for (int i = 0; i < textFields.length; i++) {
-			fieldsValues[i] = textFields[i].getText();
-		}
-		return fieldsValues;
 	}
 }

@@ -34,7 +34,7 @@ public class FirmDaoImplDb implements IItemDao<Firm> {
 				
 				st = cn.prepareStatement(FIRM_BY_ID_QUERY);
 				st.setInt(1, id);
-				
+
 				rs = st.executeQuery();
 				if (!rs.next()) {
 					throw new DaoException("Неверный код фирмы");

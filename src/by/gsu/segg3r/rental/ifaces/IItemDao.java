@@ -11,8 +11,8 @@ public interface IItemDao<T> {
 	void addItem(T item) throws DaoException;
 	void changeItem(T item) throws DaoException;
 	void deleteItem(T item) throws DaoException;
+	IItemTableRepresentation<T> getItemTableRepresentation(T item) throws DaoException;
 	
-	IItemTableRepresentation<T> getItemTableRepresentation(T item);
 	T getNewItem();
 	
 }

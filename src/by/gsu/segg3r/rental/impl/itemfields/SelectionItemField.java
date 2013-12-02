@@ -5,6 +5,7 @@ import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 
+import by.gsu.segg3r.rental.exceptions.DaoException;
 import by.gsu.segg3r.rental.ifaces.IItemDao;
 import by.gsu.segg3r.rental.ifaces.IItemField;
 import by.gsu.segg3r.rental.ifaces.IItemTableRepresentation;
@@ -14,10 +15,10 @@ public class SelectionItemField<T> implements IItemField<T>  {
 	private List<T> items;
 	private JComboBox<String> comboBox;
 	
-	public SelectionItemField(IItemDao<T> itemDao, List<T> items, T activeItem) {
+	public SelectionItemField(IItemDao<T> itemDao, T activeItem) throws DaoException {
 		super();
 		this.comboBox = new JComboBox<String>();
-		this.items = items;
+		this.items = itemDao.getItems();
 
 		for (T item : items) {
 			IItemTableRepresentation<T> rep = itemDao.getItemTableRepresentation(item);

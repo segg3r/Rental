@@ -20,6 +20,7 @@ import by.gsu.segg3r.rental.impl.rentalitem.RentalItemUiStrings;
 import by.gsu.segg3r.rental.model.Firm;
 import by.gsu.segg3r.rental.model.ItemType;
 import by.gsu.segg3r.rental.model.RentalItem;
+import by.gsu.segg3r.rental.ui.filter.FilterItemFrame;
 import by.gsu.segg3r.rental.ui.util.WindowBuilder;
 
 public class MainFrame extends JFrame {
@@ -64,7 +65,7 @@ public class MainFrame extends JFrame {
 				"\u041F\u0440\u0435\u0434\u043C\u0435\u0442\u044B \u043F\u0440\u043E\u043A\u0430\u0442\u0430");
 		rentalItemsMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				WindowBuilder.build(new ItemFrame<RentalItem>(new RentalItemDaoImplDb(
+				WindowBuilder.build(new FilterItemFrame<RentalItem>(new RentalItemDaoImplDb(
 						new FirmDaoImplDb(), new ItemTypeDaoImplDb()),
 						new RentalItemUiStrings())).setVisible(true);
 			}

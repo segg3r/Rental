@@ -40,17 +40,18 @@ public class Firm {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	
+
 	public String toString() {
-		return id + ";" + name + ";" + address;
+		return name;
 	}
-	
+
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!(obj instanceof Firm)) return false;
-		
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Firm))
+			return false;
+
 		Firm firm = (Firm) obj;
 		return id == firm.id;
 	}
-
 }

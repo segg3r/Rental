@@ -1,34 +1,46 @@
 package by.gsu.segg3r.rental.impl.rentalitem;
 
-import by.gsu.segg3r.rental.exceptions.DaoException;
+import java.util.List;
+
 import by.gsu.segg3r.rental.ifaces.IItemField;
 import by.gsu.segg3r.rental.ifaces.IItemTableRepresentation;
-import by.gsu.segg3r.rental.impl.firm.FirmDaoImplDb;
+import by.gsu.segg3r.rental.impl.itemfields.LabelItemField;
 import by.gsu.segg3r.rental.impl.itemfields.SelectionItemField;
 import by.gsu.segg3r.rental.impl.itemfields.TextItemField;
-import by.gsu.segg3r.rental.impl.itemtypes.ItemTypeDaoImplDb;
 import by.gsu.segg3r.rental.model.Firm;
 import by.gsu.segg3r.rental.model.ItemType;
 import by.gsu.segg3r.rental.model.RentalItem;
 
-public class RentalItemTableRepresentation extends IItemTableRepresentation<RentalItem> {
-
+public class RentalItemTableRepresentation extends
+		IItemTableRepresentation<RentalItem> {
+	
 	private IItemField<Firm> firm;
 	private IItemField<ItemType> itemType;
 	private IItemField<String> dailyCost;
 	private IItemField<String> inventoryNumber;
-	
-	public RentalItemTableRepresentation(RentalItem item) throws DaoException {
+	private IItemField<String> totalEarnings;
+
+	public RentalItemTableRepresentation(RentalItem item, List<Firm> firms, List<ItemType> itemTypes) {
 		super(item);
-		firm = new SelectionItemField<Firm>(new FirmDaoImplDb(), item.getFirm());
-		itemType = new SelectionItemField<ItemType>(new ItemTypeDaoImplDb(), item.getItemType());
-		dailyCost = new TextItemField(String.valueOf(item.getDailyCost()));
-		inventoryNumber = new TextItemField(String.valueOf(item.getInventoryNumber()));		
+		firm = new SelectionItemField<Firm>("Фирма", firms,
+				item.getFirm());
+		itemType = new SelectionItemField<ItemType>("Вид техники",
+				itemTypes, item.getItemType());
+		dailyCost = new TextItemField("Дневная стоимость", String.valueOf(item
+				.getDailyCost()), "руб.");
+		inventoryNumber = new TextItemField("Инвентарный номер",
+				String.valueOf(item.getInventoryNumber()));
+		totalEarnings = new LabelItemField("Суммарная выручка",
+				String.valueOf(item.getTotalEarnings()), "руб.");
 	}
 
 	@Override
 	public IItemField<?>[] getFields() {
-		return new IItemField[] {itemType, firm, dailyCost, inventoryNumber};
+		if (firm == null) {
+			
+		}
+		return new IItemField[] { totalEarnings, itemType, firm, dailyCost,
+				inventoryNumber };
 	}
 
 	@Override
@@ -40,10 +52,5 @@ public class RentalItemTableRepresentation extends IItemTableRepresentation<Rent
 		item.setInventoryNumber(Integer.valueOf(inventoryNumber.getValue()));
 	}
 
-	@Override
-	public String getStringRepresentation() {
-		RentalItem item = getItem();
-		return item.getItemType().getName() + " " + item.getFirm().getName();
-	}
 
 }

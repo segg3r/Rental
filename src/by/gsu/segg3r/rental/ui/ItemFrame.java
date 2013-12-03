@@ -35,7 +35,7 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 		this.itemDao = itemDao;
 		this.uiStrings = uiStrings;
 	}
-	
+
 	public void initializeFrame() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setSize(451, 260);
@@ -46,7 +46,7 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPanel);
 		contentPanel.setLayout(new BorderLayout(0, 0));
-		
+
 		return contentPanel;
 	}
 
@@ -65,32 +65,20 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 		panel.add(btnDeleteItem);
 		btnDeleteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				try {
-					itemTable.deleteItem();
-				} catch (DaoException e) {
-					UiErrorHandler.handleError(e.getMessage());
-				}
+				itemTable.deleteItem();
 			}
 		});
 		btnChangeItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				try {
-					itemTable.changeItem();
-				} catch (DaoException e) {
-					UiErrorHandler.handleError(e.getMessage());
-				}
+				itemTable.changeItem();
 			}
 		});
 		btnAddItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				try {
-					itemTable.addItem();
-				} catch (DaoException e) {
-					UiErrorHandler.handleError(e.getMessage());
-				}
+				itemTable.addItem();
 			}
 		});
-		
+
 		return panel;
 	}
 
@@ -98,12 +86,25 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 		JScrollPane scrollPane = new JScrollPane();
 
 		try {
-			itemTable = new ItemTable<T>(this, itemDao, uiStrings);
+			itemTable = createItemTable();
 		} catch (DaoException e) {
 			UiErrorHandler.handleError(e.getMessage());
 		}
 		scrollPane.setViewportView(itemTable);
-		
+
 		return scrollPane;
 	}
+
+	public ItemTable<T> createItemTable() throws DaoException {
+		return new ItemTable<T>(this, itemDao, uiStrings);
+	}
+
+	public IItemDao<T> getItemDao() {
+		return itemDao;
+	}
+
+	public IItemUiStrings<T> getUiStrings() {
+		return uiStrings;
+	}
+
 }

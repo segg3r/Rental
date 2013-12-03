@@ -18,9 +18,9 @@ import by.gsu.segg3r.rental.model.RentalItem;
 public class RentalItemDaoImplDb implements IItemDao<RentalItem> {
 	
 	private static final String SELECT_RENTAL_ITEM_BY_ID_QUERY = "select idФирмы, idТипаПредмета, " +
-			"СтоимостьВДень, ИнвентарныйНомер from Вещь where id = ?";
+			"СтоимостьВДень, ИнвентарныйНомер, СуммарнаяВыручка from Вещь where id = ?";
 	private static final String SELECT_RENTAL_ITEMS = "select id, idФирмы, idТипаПредмета, СтоимостьВДень," +
-			" ИнвентарныйНомер from Вещь";
+			" ИнвентарныйНомер, СуммарнаяВыручка from Вещь";
 	private static final String INSERT_RENTAL_ITEM = "insert into Вещь(idФирмы, idТипаПредмета, СтоимостьВДень, ИнвентарныйНомер) " +
 			"values(?, ?, ?, ?)";
 	private static final String UPDATE_RENTAL_ITEM = "update Вещь set idФирмы = ?, idТипаПредмета = ?, " +
@@ -56,10 +56,11 @@ public class RentalItemDaoImplDb implements IItemDao<RentalItem> {
 				int itemTypeId = rs.getInt(2);
 				int dailyCost = rs.getInt(3);
 				int inventoryNumber = rs.getInt(4);
+				int totalEarnings = rs.getInt(5);
 				Firm firm = firmDao.getItemById(firmId);
 				ItemType itemType = itemTypeDao.getItemById(itemTypeId);
 				
-				return new RentalItem(id, firm, itemType, dailyCost, inventoryNumber);
+				return new RentalItem(id, firm, itemType, dailyCost, inventoryNumber, totalEarnings);
 			} finally {
 				DbConnection.closeResultSets(rs);
 				DbConnection.closeStatements(st);
@@ -87,14 +88,14 @@ public class RentalItemDaoImplDb implements IItemDao<RentalItem> {
 				while (rs.next()) {
 					int id = rs.getInt(1);
 					int firmId = rs.getInt(2);
-
 					int itemTypeId = rs.getInt(3);
 					int dailyCost = rs.getInt(4);
 					int inventoryNumber = rs.getInt(5);
+					int totalEarnings = rs.getInt(6);
 					Firm firm = firmDao.getItemById(firmId);
 					ItemType itemType = itemTypeDao.getItemById(itemTypeId);
 					
-					rentalItems.add(new RentalItem(id, firm, itemType, dailyCost, inventoryNumber));
+					rentalItems.add(new RentalItem(id, firm, itemType, dailyCost, inventoryNumber, totalEarnings));
 				}				
 				
 				return rentalItems;
@@ -190,7 +191,7 @@ public class RentalItemDaoImplDb implements IItemDao<RentalItem> {
 	@Override
 	public IItemTableRepresentation<RentalItem> getItemTableRepresentation(
 			RentalItem item) throws DaoException {
-		return new RentalItemTableRepresentation(item);
+		return new RentalItemTableRepresentation(item, firmDao.getItems(), itemTypeDao.getItems());
 	}
 
 	@Override

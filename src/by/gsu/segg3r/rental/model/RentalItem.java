@@ -7,19 +7,23 @@ public class RentalItem {
 	private ItemType itemType;
 	private int dailyCost;
 	private int inventoryNumber;
+	private int totalEarnings;
 
 	public RentalItem() {
 		super();
+		firm = new Firm();
+		itemType = new ItemType();
 	}
 
 	public RentalItem(int id, Firm firm, ItemType itemType, int dailyCost,
-			int inventoryNumber) {
+			int inventoryNumber, int totalEarnings) {
 		super();
 		this.id = id;
 		this.firm = firm;
 		this.itemType = itemType;
 		this.dailyCost = dailyCost;
 		this.inventoryNumber = inventoryNumber;
+		this.setTotalEarnings(totalEarnings);
 	}
 
 	public int getId() {
@@ -60,6 +64,18 @@ public class RentalItem {
 
 	public void setInventoryNumber(int inventoryNumber) {
 		this.inventoryNumber = inventoryNumber;
+	}
+
+	public int getTotalEarnings() {
+		return totalEarnings;
+	}
+
+	public void setTotalEarnings(int totalEarnings) {
+		this.totalEarnings = totalEarnings;
+	}
+	
+	public String toString() {
+		return itemType + " " + firm;
 	}
 
 }

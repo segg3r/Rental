@@ -6,11 +6,6 @@ import by.gsu.segg3r.rental.model.RentalItem;
 public class RentalItemUiStrings implements IItemUiStrings<RentalItem> {
 
 	@Override
-	public String[] getTableHeader() {
-		return new String[] {"Тип предмета", "Фирма", "Дневная стоимость", "Инвентарный номер"};
-	}
-
-	@Override
 	public String getChangeItemHeader() {
 		return "Изменение предмет проката";
 	}

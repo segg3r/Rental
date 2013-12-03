@@ -12,7 +12,7 @@ public class ItemTypeTableRepresentation extends
 
 	public ItemTypeTableRepresentation(ItemType item) {
 		super(item);
-		this.name = new TextItemField(item.getName());
+		this.name = new TextItemField("Название", item.getName());
 	}
 
 	@Override
@@ -26,9 +26,5 @@ public class ItemTypeTableRepresentation extends
 		item.setName(name.getValue());
 	}
 
-	@Override
-	public String getStringRepresentation() {
-		return name.getStringValue();
-	}
 
 }

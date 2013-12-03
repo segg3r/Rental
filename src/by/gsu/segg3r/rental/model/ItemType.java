@@ -1,5 +1,6 @@
 package by.gsu.segg3r.rental.model;
 
+
 public class ItemType {
 
 	private int id;
@@ -30,13 +31,19 @@ public class ItemType {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!(obj instanceof ItemType)) return false;
-		
+		if (this == obj)
+			return true;
+		if (!(obj instanceof ItemType))
+			return false;
+
 		ItemType itemType = (ItemType) obj;
 		return id == itemType.id;
+	}
+	
+	public String toString() {
+		return name;
 	}
 
 }

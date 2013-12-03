@@ -11,6 +11,7 @@ import by.gsu.segg3r.rental.exceptions.DaoException;
 import by.gsu.segg3r.rental.ifaces.IItemDao;
 import by.gsu.segg3r.rental.ifaces.IItemTableRepresentation;
 import by.gsu.segg3r.rental.ifaces.IItemUiStrings;
+import by.gsu.segg3r.rental.ui.util.UiErrorHandler;
 import by.gsu.segg3r.rental.ui.util.WindowBuilder;
 
 public class ItemTable<T> extends JTable {
@@ -34,8 +35,9 @@ public class ItemTable<T> extends JTable {
 		this.itemDao = itemDao;
 		this.uiStrings = uiStrings;
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		this.model = new DefaultTableModel(new Object[][] {},
-				uiStrings.getTableHeader());
+		this.model = new DefaultTableModel(new Object[][] {}, itemDao
+				.getItemTableRepresentation(itemDao.getNewItem())
+				.getTableHeader());
 		this.setModel(model);
 
 		resetTable();
@@ -50,47 +52,67 @@ public class ItemTable<T> extends JTable {
 		return itemDao;
 	}
 
-	private void resetTable() throws DaoException {
+	private void resetTable() {
+		try {
+			this.items = itemDao.getItems();
+			
+			resetModel(items);
+		} catch (DaoException e) {
+			UiErrorHandler.handleError(e.getMessage());
+		}
+	}
+	
+	protected void resetModel(List<T> items) throws DaoException {
 		model.setRowCount(0);
-
-		items = itemDao.getItems();
 		for (T item : items) {
 			IItemTableRepresentation<T> itemTableRep = itemDao
 					.getItemTableRepresentation(item);
-			model.addRow(itemTableRep.getStringFields());
+			model.addRow(itemTableRep.getTableStringFields());
+		}
+	}
+	
+	public void addItem() {
+		try {
+			T item = WindowBuilder.build(
+					new ItemDialog<T>(frame, uiStrings.getAddItemHeader(),
+							itemDao.getItemTableRepresentation(itemDao
+									.getNewItem()))).getItem();
+			if (item != null) {
+				itemDao.addItem(item);
+				resetTable();
+			}
+		} catch (DaoException e) {
+			UiErrorHandler.handleError(e.getMessage());
 		}
 	}
 
-	public void addItem() throws DaoException {
-		T item = WindowBuilder.build(
-				new ItemDialog<T>(frame, uiStrings.getAddItemHeader(),
-						uiStrings, itemDao.getItemTableRepresentation(itemDao
-								.getNewItem()))).getItem();
-		if (item != null) {
-			itemDao.addItem(item);
+	public void changeItem() {
+		try {
+			T item = WindowBuilder
+					.build(new ItemDialog<T>(frame, uiStrings
+							.getChangeItemHeader(), itemDao
+							.getItemTableRepresentation(getSelectedItem())))
+					.getItem();
+			if (item != null) {
+				itemDao.changeItem(item);
+				resetTable();
+			}
+		} catch (DaoException e) {
+			UiErrorHandler.handleError(e.getMessage());
+		}
+	}
+
+	public void deleteItem() {
+		try {
+			T item = getSelectedItem();
+			itemDao.deleteItem(item);
 			resetTable();
+		} catch (DaoException e) {
+			UiErrorHandler.handleError(e.getMessage());
 		}
 	}
 
-	public void changeItem() throws DaoException {
-		T item = WindowBuilder
-				.build(new ItemDialog<T>(frame,
-						uiStrings.getChangeItemHeader(), uiStrings, itemDao
-								.getItemTableRepresentation(getSelectedItem())))
-				.getItem();
-		if (item != null) {
-			itemDao.changeItem(item);
-			resetTable();
-		}
-	}
-
-	public void deleteItem() throws DaoException {
-		T item = getSelectedItem();
-		itemDao.deleteItem(item);
-		resetTable();
-	}
-
-	private T getSelectedItem() throws DaoException {
+	protected T getSelectedItem() throws DaoException {
 		int selectedRow = getSelectedRow();
 		if (selectedRow == -1) {
 			throw new DaoException("Выберите строку");
@@ -100,6 +122,14 @@ public class ItemTable<T> extends JTable {
 
 	public boolean isEmpty() {
 		return getRowCount() == 0;
+	}
+
+	public DefaultTableModel getModel() {
+		return model;
+	}
+	
+	public List<T> getItems() {
+		return items;
 	}
 
 }

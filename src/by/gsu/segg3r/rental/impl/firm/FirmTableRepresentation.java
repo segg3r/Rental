@@ -12,8 +12,8 @@ public class FirmTableRepresentation extends IItemTableRepresentation<Firm> {
 	
 	public FirmTableRepresentation(Firm item) {
 		super(item);
-		this.name = new TextItemField(item.getName());
-		this.address = new TextItemField(item.getAddress());
+		this.name = new TextItemField("Название", item.getName());
+		this.address = new TextItemField("Адрес филиала", item.getAddress());
 	}
 
 	@Override
@@ -27,11 +27,5 @@ public class FirmTableRepresentation extends IItemTableRepresentation<Firm> {
 	public IItemField<?>[] getFields() {
 		return new IItemField[] {name, address};
 	}
-
-	@Override
-	public String getStringRepresentation() {
-		return name.getStringValue();
-	}
-
 
 }

@@ -6,11 +6,6 @@ import by.gsu.segg3r.rental.model.Firm;
 public class FirmUiStrings implements IItemUiStrings<Firm> {
 
 	@Override
-	public String[] getTableHeader() {
-		return new String[] {"Название", "Адрес филиала"};
-	}
-
-	@Override
 	public String getChangeItemHeader() {
 		return "Изменение данных о фирме";
 	}

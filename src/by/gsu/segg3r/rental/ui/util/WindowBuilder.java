@@ -11,10 +11,10 @@ public class WindowBuilder {
 
 	public static <T extends Window & IItemWindow> T build(T window) {
 		window.initializeFrame();		
+
 		JPanel contentPanel = window.initializeContentPane();
 		contentPanel.add(window.getMainPanel(), BorderLayout.CENTER);
 		contentPanel.add(window.getButtonPanel(), BorderLayout.SOUTH);
-		
 		return window;
 	}
 	

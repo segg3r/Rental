@@ -6,11 +6,6 @@ import by.gsu.segg3r.rental.model.ItemType;
 public class ItemTypeUiStrings implements IItemUiStrings<ItemType> {
 
 	@Override
-	public String[] getTableHeader() {
-		return new String[] { "Название" };
-	}
-
-	@Override
 	public String getChangeItemHeader() {
 		return "Изменение данных о типе предмета";
 	}

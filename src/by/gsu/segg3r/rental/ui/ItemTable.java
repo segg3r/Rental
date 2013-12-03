@@ -2,6 +2,7 @@ package by.gsu.segg3r.rental.ui;
 
 import java.util.List;
 
+import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
@@ -15,6 +16,7 @@ public class ItemTable<T> extends JTable {
 
 	private static final long serialVersionUID = 1L;
 
+	private JFrame frame;
 	private List<T> items;
 	private IItemDao<T> itemDao;
 	private IItemUiStrings<T> uiStrings;
@@ -24,8 +26,9 @@ public class ItemTable<T> extends JTable {
 		super();
 	}
 
-	public ItemTable(IItemDao<T> itemDao, IItemUiStrings<T> uiStrings) throws DaoException {
+	public ItemTable(JFrame frame, IItemDao<T> itemDao, IItemUiStrings<T> uiStrings) throws DaoException {
 		super();
+		this.frame = frame;
 		this.itemDao = itemDao;
 		this.uiStrings = uiStrings;
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -56,7 +59,7 @@ public class ItemTable<T> extends JTable {
 	}
 
 	public void addItem() throws DaoException {
-		T item = new ItemDialog<T>(uiStrings.getAddItemHeader(), uiStrings,
+		T item = new ItemDialog<T>(frame, uiStrings.getAddItemHeader(), uiStrings,
 				itemDao.getItemTableRepresentation(itemDao.getNewItem())).showDialog();
 		if (item != null) {
 			itemDao.addItem(item);
@@ -65,7 +68,7 @@ public class ItemTable<T> extends JTable {
 	}
 
 	public void changeItem() throws DaoException {
-		T item = new ItemDialog<T>(uiStrings.getChangeItemHeader(), uiStrings,
+		T item = new ItemDialog<T>(frame, uiStrings.getChangeItemHeader(), uiStrings,
 				itemDao.getItemTableRepresentation(getSelectedItem())).showDialog();
 		if (item != null) {
 			itemDao.changeItem(item);

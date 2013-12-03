@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -14,40 +15,47 @@ import javax.swing.border.EmptyBorder;
 import by.gsu.segg3r.rental.exceptions.DaoException;
 import by.gsu.segg3r.rental.ifaces.IItemDao;
 import by.gsu.segg3r.rental.ifaces.IItemUiStrings;
+import by.gsu.segg3r.rental.ifaces.IItemWindow;
 import by.gsu.segg3r.rental.ui.util.UiErrorHandler;
+import by.gsu.segg3r.rental.ui.util.WindowBuilder;
 
-public class ItemFrame<T> extends JFrame {
+public class ItemFrame<T> extends JFrame implements IItemWindow {
 
 	private static final long serialVersionUID = 1L;
 
-	private JPanel contentPane;
+	private JPanel contentPanel = new JPanel();
 	private ItemTable<T> itemTable;
+	private IItemDao<T> itemDao;
+	private IItemUiStrings<T> uiStrings;
 
 	/**
 	 * Create the frame.
 	 */
 	public ItemFrame(IItemDao<T> itemDao, IItemUiStrings<T> uiStrings) {
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 451, 260);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		contentPane.setLayout(new BorderLayout(0, 0));
+		super();
+		this.itemDao = itemDao;
+		this.uiStrings = uiStrings;
 		
+		WindowBuilder.buildWindow(this);
+	}
+	
+	public void initializeFrame() {
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setSize(451, 260);
 		setTitle(uiStrings.getFrameHeader());
+	}
 
-		JScrollPane scrollPane = new JScrollPane();
-		contentPane.add(scrollPane, BorderLayout.CENTER);
+	public JPanel initializeContentPane() {
+		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPanel);
+		contentPanel.setLayout(new BorderLayout(0, 0));
+		
+		return contentPanel;
+	}
 
-		try {
-			itemTable = new ItemTable<T>(itemDao, uiStrings);
-		} catch (DaoException e) {
-			UiErrorHandler.handleError(e.getMessage());
-		}
-		scrollPane.setViewportView(itemTable);
-
+	public JComponent getButtonPanel() {
 		JPanel panel = new JPanel();
-		contentPane.add(panel, BorderLayout.SOUTH);
+		contentPanel.add(panel, BorderLayout.SOUTH);
 		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
 		JButton btnAddItem = new JButton("Добавить");
@@ -85,5 +93,20 @@ public class ItemFrame<T> extends JFrame {
 				}
 			}
 		});
+		
+		return panel;
+	}
+
+	public JComponent getMainPanel() {
+		JScrollPane scrollPane = new JScrollPane();
+
+		try {
+			itemTable = new ItemTable<T>(this, itemDao, uiStrings);
+		} catch (DaoException e) {
+			UiErrorHandler.handleError(e.getMessage());
+		}
+		scrollPane.setViewportView(itemTable);
+		
+		return scrollPane;
 	}
 }

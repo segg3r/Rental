@@ -1,6 +1,7 @@
 package by.gsu.segg3r.rental.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,55 +17,72 @@ import javax.swing.border.EmptyBorder;
 import by.gsu.segg3r.rental.ifaces.IItemField;
 import by.gsu.segg3r.rental.ifaces.IItemTableRepresentation;
 import by.gsu.segg3r.rental.ifaces.IItemUiStrings;
+import by.gsu.segg3r.rental.ifaces.IItemWindow;
+import by.gsu.segg3r.rental.ui.util.WindowBuilder;
 
-public class ItemDialog<T> extends JDialog {
+public class ItemDialog<T> extends JDialog implements IItemWindow {
 
 	private static final long serialVersionUID = 1L;
 
 	private T item;
-	private final JPanel contentPanel = new JPanel();
-
+	private JPanel contentPanel = new JPanel();
 	private IItemTableRepresentation<T> itemTableRepresentation;
+	private IItemUiStrings<T> uiStrings;
+	private String title;
+	private JFrame frame;
 
 	/**
 	 * Create the dialog.
+	 * @param frame 
 	 */
-	public ItemDialog(String title, IItemUiStrings<T> uiStrings, IItemTableRepresentation<T> itemTableRepresentation) {
-		super((JFrame) null, true);
+	public ItemDialog(JFrame frame, String title, IItemUiStrings<T> uiStrings,
+			IItemTableRepresentation<T> itemTableRepresentation) {
+		super(frame, true);
+		this.frame = frame;
 		this.itemTableRepresentation = itemTableRepresentation;
-		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		
-		setBounds(100, 100, 345, 188);
-		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(null);
+		this.uiStrings = uiStrings;
+		this.title = title;
 
-		setTitle(title);
-
-		initializeFields(uiStrings, itemTableRepresentation);
-		initializeButtonPanel(uiStrings);
+		WindowBuilder.buildWindow(this);
 	}
+	
+	public void initializeFrame() {
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.setBounds(frame.getX(), frame.getY(), 345, 188);
+		this.setTitle(title);
+	}
+	
+	public JPanel initializeContentPane() {
+		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPanel);
+		contentPanel.setLayout(new BorderLayout(0, 0));
+		
+		return contentPanel;
+	}	
 
-	protected void initializeFields(IItemUiStrings<T> uiStrings, IItemTableRepresentation<T> itemTableRepresentation) {
+	public Component getMainPanel() {
+		JPanel mainPane = new JPanel();
+		mainPane.setLayout(null);
+
 		String[] tableHeader = uiStrings.getTableHeader();
 		IItemField<?>[] fields = itemTableRepresentation.getFields();
 
 		for (int i = 0; i < tableHeader.length; i++) {
 			JLabel label = new JLabel(tableHeader[i] + ":");
 			label.setBounds(10, 11 + i * 24, 100, 14);
-			contentPanel.add(label);
+			mainPane.add(label);
 
 			JComponent component = fields[i].getComponent();
 			component.setBounds(120, 8 + i * 24, 199, 20);
-			contentPanel.add(component);
+			mainPane.add(component);
 		}
+
+		return mainPane;
 	}
 
-	protected void initializeButtonPanel(final IItemUiStrings<T> uiStrings) {
+	public Component getButtonPanel() {
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 		JButton okButton = new JButton("Принять");
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -85,13 +103,15 @@ public class ItemDialog<T> extends JDialog {
 		});
 		cancelButton.setActionCommand("Cancel");
 		buttonPane.add(cancelButton);
+
+		return buttonPane;
 	}
 
 	public T showDialog() {
 		setVisible(true);
 		return item;
 	}
-	
+
 	private void closeDialog() {
 		setVisible(false);
 		dispose();

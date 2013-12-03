@@ -40,14 +40,8 @@ public class ItemDialog<T> extends JDialog implements IItemWindow {
 		this.frame = frame;
 		this.itemTableRepresentation = itemTableRepresentation;
 		this.title = title;
-
-		addKeysListener();
 	}
-
-	public void addKeysListener() {
-
-	}
-
+	
 	public void initializeFrame() {
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.setTitle(title);

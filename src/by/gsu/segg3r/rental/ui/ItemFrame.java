@@ -87,6 +87,7 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 
 		try {
 			itemTable = createItemTable();
+			itemTable.reset();
 		} catch (DaoException e) {
 			UiErrorHandler.handleError(e.getMessage());
 		}

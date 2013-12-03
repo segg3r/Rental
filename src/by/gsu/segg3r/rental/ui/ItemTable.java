@@ -39,8 +39,6 @@ public class ItemTable<T> extends JTable {
 				.getItemTableRepresentation(itemDao.getNewItem())
 				.getTableHeader());
 		this.setModel(model);
-
-		resetTable();
 	}
 
 	@Override
@@ -52,17 +50,20 @@ public class ItemTable<T> extends JTable {
 		return itemDao;
 	}
 
-	private void resetTable() {
+	public void reset() {
 		try {
-			this.items = itemDao.getItems();
-			
+			resetData();
 			resetModel(items);
 		} catch (DaoException e) {
 			UiErrorHandler.handleError(e.getMessage());
 		}
 	}
-	
-	protected void resetModel(List<T> items) throws DaoException {
+
+	public void resetData() throws DaoException {
+		this.items = itemDao.getItems();
+	}
+
+	public void resetModel(List<T> items) throws DaoException {
 		model.setRowCount(0);
 		for (T item : items) {
 			IItemTableRepresentation<T> itemTableRep = itemDao
@@ -70,7 +71,7 @@ public class ItemTable<T> extends JTable {
 			model.addRow(itemTableRep.getTableStringFields());
 		}
 	}
-	
+
 	public void addItem() {
 		try {
 			T item = WindowBuilder.build(
@@ -79,7 +80,7 @@ public class ItemTable<T> extends JTable {
 									.getNewItem()))).getItem();
 			if (item != null) {
 				itemDao.addItem(item);
-				resetTable();
+				reset();
 			}
 		} catch (DaoException e) {
 			UiErrorHandler.handleError(e.getMessage());
@@ -95,7 +96,7 @@ public class ItemTable<T> extends JTable {
 					.getItem();
 			if (item != null) {
 				itemDao.changeItem(item);
-				resetTable();
+				reset();
 			}
 		} catch (DaoException e) {
 			UiErrorHandler.handleError(e.getMessage());
@@ -106,7 +107,7 @@ public class ItemTable<T> extends JTable {
 		try {
 			T item = getSelectedItem();
 			itemDao.deleteItem(item);
-			resetTable();
+			reset();
 		} catch (DaoException e) {
 			UiErrorHandler.handleError(e.getMessage());
 		}
@@ -127,7 +128,7 @@ public class ItemTable<T> extends JTable {
 	public DefaultTableModel getModel() {
 		return model;
 	}
-	
+
 	public List<T> getItems() {
 		return items;
 	}

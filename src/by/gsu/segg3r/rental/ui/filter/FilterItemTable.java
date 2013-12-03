@@ -13,24 +13,39 @@ public class FilterItemTable<T> extends ItemTable<T> {
 
 	private static final long serialVersionUID = 1L;
 	private List<T> filteredItems;
+	private String filter;
 
 	public FilterItemTable(FilterItemFrame<T> filterItemFrame,
 			IItemDao<T> itemDao, IItemUiStrings<T> uiStrings)
 			throws DaoException {
 		super(filterItemFrame, itemDao, uiStrings);
-		this.filteredItems = getItems();
 	}
 
-	public void filter(String filter) {
-		try {
-			filteredItems = new ArrayList<T>();
-			for (T item : getItems()) {
+	public synchronized void filter(String filter) {
+		this.filter = filter;
+		filter();
+	}
+	
+	public synchronized void filter() {
+		try {			
+			this.filteredItems = new ArrayList<T>();
+			if (filter == null) filter = "";
+			for (T item : super.getItems()) {
 				if (item.toString().toLowerCase()
 						.contains(filter.toLowerCase())) {
-					filteredItems.add(item);
+					this.filteredItems.add(item);
 				}
 			}
-			
+			resetModel(this.filteredItems);
+		} catch (DaoException e) {
+			UiErrorHandler.handleError(e.getMessage());
+		}
+	}
+	
+	public void reset() {
+		try {
+			resetData();
+			filter();
 			resetModel(filteredItems);
 		} catch (DaoException e) {
 			UiErrorHandler.handleError(e.getMessage());
@@ -43,6 +58,10 @@ public class FilterItemTable<T> extends ItemTable<T> {
 			throw new DaoException("Выберите строку");
 		}
 		return filteredItems.get(selectedRow);
+	}
+	
+	public List<T> getItems() {
+		return filteredItems;
 	}
 
 }

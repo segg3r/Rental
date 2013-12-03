@@ -71,7 +71,12 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 			}
 
 			private void filter() {
-				filterItemTable.filter(filterTextField.getText());
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						filterItemTable.filter(filterTextField.getText());
+					}
+				}).start();
 			}
 
 		};

@@ -11,6 +11,7 @@ import by.gsu.segg3r.rental.exceptions.DaoException;
 import by.gsu.segg3r.rental.ifaces.IItemDao;
 import by.gsu.segg3r.rental.ifaces.IItemTableRepresentation;
 import by.gsu.segg3r.rental.ifaces.IItemUiStrings;
+import by.gsu.segg3r.rental.ui.util.WindowBuilder;
 
 public class ItemTable<T> extends JTable {
 
@@ -26,7 +27,8 @@ public class ItemTable<T> extends JTable {
 		super();
 	}
 
-	public ItemTable(JFrame frame, IItemDao<T> itemDao, IItemUiStrings<T> uiStrings) throws DaoException {
+	public ItemTable(JFrame frame, IItemDao<T> itemDao,
+			IItemUiStrings<T> uiStrings) throws DaoException {
 		super();
 		this.frame = frame;
 		this.itemDao = itemDao;
@@ -53,14 +55,17 @@ public class ItemTable<T> extends JTable {
 
 		items = itemDao.getItems();
 		for (T item : items) {
-			IItemTableRepresentation<T> itemTableRep = itemDao.getItemTableRepresentation(item);
+			IItemTableRepresentation<T> itemTableRep = itemDao
+					.getItemTableRepresentation(item);
 			model.addRow(itemTableRep.getStringFields());
 		}
 	}
 
 	public void addItem() throws DaoException {
-		T item = new ItemDialog<T>(frame, uiStrings.getAddItemHeader(), uiStrings,
-				itemDao.getItemTableRepresentation(itemDao.getNewItem())).showDialog();
+		T item = WindowBuilder.build(
+				new ItemDialog<T>(frame, uiStrings.getAddItemHeader(),
+						uiStrings, itemDao.getItemTableRepresentation(itemDao
+								.getNewItem()))).getItem();
 		if (item != null) {
 			itemDao.addItem(item);
 			resetTable();
@@ -68,8 +73,11 @@ public class ItemTable<T> extends JTable {
 	}
 
 	public void changeItem() throws DaoException {
-		T item = new ItemDialog<T>(frame, uiStrings.getChangeItemHeader(), uiStrings,
-				itemDao.getItemTableRepresentation(getSelectedItem())).showDialog();
+		T item = WindowBuilder
+				.build(new ItemDialog<T>(frame,
+						uiStrings.getChangeItemHeader(), uiStrings, itemDao
+								.getItemTableRepresentation(getSelectedItem())))
+				.getItem();
 		if (item != null) {
 			itemDao.changeItem(item);
 			resetTable();

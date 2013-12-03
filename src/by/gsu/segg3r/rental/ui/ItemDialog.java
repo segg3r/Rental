@@ -18,7 +18,6 @@ import by.gsu.segg3r.rental.ifaces.IItemField;
 import by.gsu.segg3r.rental.ifaces.IItemTableRepresentation;
 import by.gsu.segg3r.rental.ifaces.IItemUiStrings;
 import by.gsu.segg3r.rental.ifaces.IItemWindow;
-import by.gsu.segg3r.rental.ui.util.WindowBuilder;
 
 public class ItemDialog<T> extends JDialog implements IItemWindow {
 
@@ -42,8 +41,6 @@ public class ItemDialog<T> extends JDialog implements IItemWindow {
 		this.itemTableRepresentation = itemTableRepresentation;
 		this.uiStrings = uiStrings;
 		this.title = title;
-
-		WindowBuilder.buildWindow(this);
 	}
 	
 	public void initializeFrame() {
@@ -107,7 +104,7 @@ public class ItemDialog<T> extends JDialog implements IItemWindow {
 		return buttonPane;
 	}
 
-	public T showDialog() {
+	public T getItem() {
 		setVisible(true);
 		return item;
 	}

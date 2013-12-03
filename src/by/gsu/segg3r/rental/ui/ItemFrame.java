@@ -17,7 +17,6 @@ import by.gsu.segg3r.rental.ifaces.IItemDao;
 import by.gsu.segg3r.rental.ifaces.IItemUiStrings;
 import by.gsu.segg3r.rental.ifaces.IItemWindow;
 import by.gsu.segg3r.rental.ui.util.UiErrorHandler;
-import by.gsu.segg3r.rental.ui.util.WindowBuilder;
 
 public class ItemFrame<T> extends JFrame implements IItemWindow {
 
@@ -35,8 +34,6 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 		super();
 		this.itemDao = itemDao;
 		this.uiStrings = uiStrings;
-		
-		WindowBuilder.buildWindow(this);
 	}
 	
 	public void initializeFrame() {

@@ -10,5 +10,6 @@ public interface IItemWindow {
 	JPanel initializeContentPane();
 	Component getMainPanel();
 	Component getButtonPanel();
+	Component getUpperPanel();
 	
 }

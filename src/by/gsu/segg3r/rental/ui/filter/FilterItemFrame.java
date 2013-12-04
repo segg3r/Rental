@@ -1,6 +1,5 @@
 package by.gsu.segg3r.rental.ui.filter;
 
-import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
 import javax.swing.JComponent;
@@ -11,30 +10,27 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import by.gsu.segg3r.rental.exceptions.DaoException;
+import by.gsu.segg3r.rental.exceptions.UiException;
 import by.gsu.segg3r.rental.ifaces.IItemDao;
+import by.gsu.segg3r.rental.ifaces.IItemHolder;
 import by.gsu.segg3r.rental.ifaces.IItemUiStrings;
+import by.gsu.segg3r.rental.ui.FilterItemHolderComponent;
 import by.gsu.segg3r.rental.ui.ItemFrame;
-import by.gsu.segg3r.rental.ui.ItemTable;
+import by.gsu.segg3r.rental.ui.util.UiErrorHandler;
 
 public class FilterItemFrame<T> extends ItemFrame<T> {
 
 	private static final long serialVersionUID = 1L;
-	private FilterItemTable<T> filterItemTable;
+	private FilterItemHolderComponent<T> filterItemComponent;
 	private JTextField filterTextField;
 
 	public FilterItemFrame(IItemDao<T> itemDao, IItemUiStrings<T> uiStrings) {
 		super(itemDao, uiStrings);
 	}
 
-	public JComponent getMainPanel() {
-		JComponent component = super.getMainPanel();
-
-		JPanel panel = new JPanel();
-		panel.setLayout(new BorderLayout());
-		panel.add(component, BorderLayout.CENTER);
-
+	public JComponent getUpperPanel() {
 		JPanel filterPanel = new JPanel();
-		filterPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+		filterPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
 		filterPanel.add(new JLabel("Фильтр: "));
 
@@ -42,14 +38,25 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 		filterPanel.add(filterTextField);
 		filterTextField.getDocument().addDocumentListener(getFilterListener());
 
-		panel.add(filterPanel, BorderLayout.NORTH);
-		return panel;
+		return filterPanel;
 	}
 
-	public ItemTable<T> createItemTable() throws DaoException {
-		this.filterItemTable = new FilterItemTable<T>(this, getItemDao(),
-				getUiStrings());
-		return this.filterItemTable;
+	public IItemHolder<T> createItemHolder() throws DaoException {
+		return createItemHolder(new FilterItemTable<T>(getItemDao()));
+	}
+	
+	protected IItemHolder<T> createItemHolder(FilterItemHolderComponent<T> filterItemComponent) {
+		setFilterItemComponent(filterItemComponent);
+		return filterItemComponent;
+	}
+
+	private void setFilterItemComponent(FilterItemHolderComponent<T> filterItemComponent) {
+		this.filterItemComponent = filterItemComponent;
+	}
+
+	public void filterWith(String filter) {
+		filterTextField.setText(filter);
+		filter();
 	}
 
 	private DocumentListener getFilterListener() {
@@ -70,16 +77,23 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 				filter();
 			}
 
-			private void filter() {
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						filterItemTable.filter(filterTextField.getText());
-					}
-				}).start();
-			}
-
 		};
+	}
+	
+	private void filter() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					filterItemComponent.filter(filterTextField.getText());
+					
+					checkDeleteButton();
+					getScrollPane().revalidate();
+				} catch (UiException e) {
+					UiErrorHandler.handleError(e.getMessage());
+				}
+			}
+		}).start();
 	}
 
 }

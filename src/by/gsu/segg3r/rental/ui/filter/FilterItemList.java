@@ -7,33 +7,29 @@ import by.gsu.segg3r.rental.exceptions.DaoException;
 import by.gsu.segg3r.rental.exceptions.UiException;
 import by.gsu.segg3r.rental.ifaces.IItemDao;
 import by.gsu.segg3r.rental.ui.FilterItemHolderComponent;
-import by.gsu.segg3r.rental.ui.ItemTable;
+import by.gsu.segg3r.rental.ui.ItemList;
 
-public class FilterItemTable<T> extends FilterItemHolderComponent<T> {
+public class FilterItemList<T> extends FilterItemHolderComponent<T> {
 
-	private ItemTable<T> itemTable;
+	private ItemList<T> itemList;
 	
-	public FilterItemTable(IItemDao<T> itemDao) throws DaoException {
+	public FilterItemList(IItemDao<T> itemDao) throws DaoException {
 		super(itemDao);
-		this.itemTable = new ItemTable<>(itemDao);
+		this.itemList = new ItemList<>(itemDao);
 	}
 
 	public T getSelectedItem() throws UiException {
-		int selectedRow = itemTable.getTable().getSelectedRow();
-		if (selectedRow == -1) {
-			throw new UiException("Выберите строку");
-		}
-		return getItems().get(selectedRow);
+		return itemList.getSelectedItem();
 	}
 
 	@Override
 	public Component getComponent() {
-		return itemTable.getComponent();
+		return itemList.getComponent();
 	}
 
 	@Override
 	public void resetModel(List<T> items) throws UiException {
-		itemTable.resetModel(items);
+		itemList.resetModel(items);
 	}
 
 }

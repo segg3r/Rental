@@ -1,7 +1,13 @@
 package by.gsu.segg3r.rental.ifaces;
 
+import java.awt.Component;
+import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import by.gsu.segg3r.rental.ifaces.IItemField.Visibility;
 
@@ -47,5 +53,37 @@ public abstract class IItemTableRepresentation<T> {
 	
 	public T getItem() {
 		return item;
+	}
+	
+	public Component getChangableComponent() {
+		JPanel inner = new JPanel();
+		inner.setLayout(new GridLayout(0, 2, 7, 7));
+
+		IItemField<?>[] fields = getFields();
+
+		for (int i = 0; i < fields.length; i++) {
+			if (fields[i].getVisibility() != Visibility.TABLE_ONLY) {
+				JLabel label = new JLabel(fields[i].getName() + ":");
+				inner.add(label);
+
+				JComponent component = fields[i].getComponent();
+				inner.add(component);
+			}
+		}
+		
+		return inner;
+	}
+	
+	public abstract Component getListComponent();
+	
+	public int getFieldCount(Visibility excluding) {
+		int count = 0;
+		for (IItemField<?> field : getFields()) {
+			if (field.getVisibility() != excluding) {
+				count++;
+			}
+		}
+		
+		return count;
 	}
 }

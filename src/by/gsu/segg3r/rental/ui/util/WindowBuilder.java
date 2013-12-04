@@ -1,6 +1,7 @@
 package by.gsu.segg3r.rental.ui.util;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Window;
 
 import javax.swing.JPanel;
@@ -13,8 +14,19 @@ public class WindowBuilder {
 		window.initializeFrame();		
 
 		JPanel contentPanel = window.initializeContentPane();
-		contentPanel.add(window.getMainPanel(), BorderLayout.CENTER);
-		contentPanel.add(window.getButtonPanel(), BorderLayout.SOUTH);
+	
+		Component mainPanel = window.getMainPanel();
+		Component buttonPanel = window.getButtonPanel();
+		Component upperPanel = window.getUpperPanel();
+		
+		if (mainPanel != null) 
+			contentPanel.add(mainPanel, BorderLayout.CENTER);
+		
+		if (buttonPanel != null) 
+			contentPanel.add(buttonPanel, BorderLayout.SOUTH);
+		
+		if (upperPanel != null) 
+			contentPanel.add(upperPanel, BorderLayout.NORTH);
 		return window;
 	}
 	

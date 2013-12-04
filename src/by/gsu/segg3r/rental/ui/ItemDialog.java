@@ -7,14 +7,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import by.gsu.segg3r.rental.ifaces.IItemField;
 import by.gsu.segg3r.rental.ifaces.IItemField.Visibility;
 import by.gsu.segg3r.rental.ifaces.IItemTableRepresentation;
 import by.gsu.segg3r.rental.ifaces.IItemWindow;
@@ -56,30 +53,12 @@ public class ItemDialog<T> extends JDialog implements IItemWindow {
 	}
 
 	public Component getMainPanel() {
-		JPanel mainPane = new JPanel();
-		mainPane.setLayout(null);
-
-		IItemField<?>[] fields = itemTableRepresentation.getFields();
-
-		int count = 0;
-		for (int i = 0; i < fields.length; i++) {
-			if (fields[i].getVisibility() != Visibility.TABLE_ONLY) {
-				JLabel label = new JLabel(fields[i].getName() + ":");
-				label.setBounds(10, 11 + count * 24, 150, 14);
-				mainPane.add(label);
-
-				JComponent component = fields[i].getComponent();
-				component.setBounds(250, 8 + count * 24, 199, 20);
-				mainPane.add(component);
-
-				count++;
-			}
-		}
-
-		int height = count * 25 + 100;
+		Component panel = itemTableRepresentation.getChangableComponent();		
+		
+		int height = itemTableRepresentation.getFieldCount(Visibility.TABLE_ONLY) * 25 + 100;
 		setBounds(frame.getX(), frame.getY(), 500, height);
-
-		return mainPane;
+		
+		return panel;
 	}
 
 	public Component getButtonPanel() {
@@ -125,5 +104,10 @@ public class ItemDialog<T> extends JDialog implements IItemWindow {
 	private void closeDialog() {
 		setVisible(false);
 		dispose();
+	}
+
+	@Override
+	public Component getUpperPanel() {
+		return null;
 	}
 }

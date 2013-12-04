@@ -13,19 +13,24 @@ import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
 import by.gsu.segg3r.rental.exceptions.DaoException;
+import by.gsu.segg3r.rental.exceptions.UiException;
 import by.gsu.segg3r.rental.ifaces.IItemDao;
+import by.gsu.segg3r.rental.ifaces.IItemHolder;
 import by.gsu.segg3r.rental.ifaces.IItemUiStrings;
 import by.gsu.segg3r.rental.ifaces.IItemWindow;
 import by.gsu.segg3r.rental.ui.util.UiErrorHandler;
+import by.gsu.segg3r.rental.ui.util.WindowBuilder;
 
 public class ItemFrame<T> extends JFrame implements IItemWindow {
 
 	private static final long serialVersionUID = 1L;
 
 	private JPanel contentPanel = new JPanel();
-	private ItemTable<T> itemTable;
+	private IItemHolder<T> itemHolder;
 	private IItemDao<T> itemDao;
 	private IItemUiStrings<T> uiStrings;
+	private JButton btnDeleteItem;
+	private JScrollPane scrollPane;
 
 	/**
 	 * Create the frame.
@@ -38,7 +43,7 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 
 	public void initializeFrame() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setSize(451, 260);
+		setSize(600, 400);
 		setTitle(uiStrings.getFrameHeader());
 	}
 
@@ -53,51 +58,98 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 	public JComponent getButtonPanel() {
 		JPanel panel = new JPanel();
 		contentPanel.add(panel, BorderLayout.SOUTH);
-		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		panel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
 
 		JButton btnAddItem = new JButton("Добавить");
 		panel.add(btnAddItem);
 
-		JButton btnChangeItem = new JButton("Изменить");
+		JButton btnChangeItem = new JButton("Просмотр");
 		panel.add(btnChangeItem);
 
-		JButton btnDeleteItem = new JButton("Удалить");
+		btnDeleteItem = new JButton("Удалить");
 		panel.add(btnDeleteItem);
 		btnDeleteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				itemTable.deleteItem();
+				try {
+					itemDao.deleteItem(itemHolder.getSelectedItem());
+					itemHolder.reset();
+
+					checkDeleteButton();
+				} catch (UiException | DaoException e) {
+					UiErrorHandler.handleError(e.getMessage());
+				}
 			}
 		});
 		btnChangeItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				itemTable.changeItem();
+				try {
+					T item = WindowBuilder.build(
+							new ItemDialog<T>(ItemFrame.this, uiStrings
+									.getChangeItemHeader(), itemDao
+									.getItemTableRepresentation(itemHolder
+											.getSelectedItem()))).getItem();
+					if (item != null) {
+						itemDao.changeItem(item);
+						itemHolder.reset();
+
+						checkDeleteButton();
+					}
+				} catch (UiException | DaoException e) {
+					UiErrorHandler.handleError(e.getMessage());
+				}
 			}
 		});
 		btnAddItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				itemTable.addItem();
+				try {
+					T item = WindowBuilder.build(
+							new ItemDialog<T>(ItemFrame.this, uiStrings
+									.getAddItemHeader(), itemDao
+									.getItemTableRepresentation(itemDao
+											.getNewItem()))).getItem();
+					if (item != null) {
+						itemDao.addItem(item);
+						itemHolder.reset();
+
+						checkDeleteButton();
+					}
+				} catch (UiException | DaoException e) {
+					UiErrorHandler.handleError(e.getMessage());
+				}
 			}
 		});
 
 		return panel;
 	}
 
+	protected void checkDeleteButton() {
+		btnDeleteItem.setEnabled(!itemHolder.isEmpty());
+	}
+
 	public JComponent getMainPanel() {
-		JScrollPane scrollPane = new JScrollPane();
+		scrollPane = new JScrollPane();
 
 		try {
-			itemTable = createItemTable();
-			itemTable.reset();
-		} catch (DaoException e) {
+			itemHolder = createItemHolder();
+			itemHolder.reset();
+		} catch (DaoException | UiException e) {
 			UiErrorHandler.handleError(e.getMessage());
 		}
-		scrollPane.setViewportView(itemTable);
+		scrollPane.setViewportView(itemHolder.getComponent());
 
 		return scrollPane;
 	}
+	
+	public JScrollPane getScrollPane() {
+		return scrollPane;
+	}
 
-	public ItemTable<T> createItemTable() throws DaoException {
-		return new ItemTable<T>(this, itemDao, uiStrings);
+	public JComponent getUpperPanel() {
+		return null;
+	}
+
+	public IItemHolder<T> createItemHolder() throws DaoException {
+		return new ItemTable<T>(itemDao);
 	}
 
 	public IItemDao<T> getItemDao() {
@@ -106,6 +158,10 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 
 	public IItemUiStrings<T> getUiStrings() {
 		return uiStrings;
+	}
+
+	public IItemHolder<T> getItemHolder() {
+		return itemHolder;
 	}
 
 }

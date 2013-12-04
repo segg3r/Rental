@@ -36,9 +36,6 @@ public class RentalItemTableRepresentation extends
 
 	@Override
 	public IItemField<?>[] getFields() {
-		if (firm == null) {
-			
-		}
 		return new IItemField[] { totalEarnings, itemType, firm, dailyCost,
 				inventoryNumber };
 	}

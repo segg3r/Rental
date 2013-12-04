@@ -1,128 +1,80 @@
 package by.gsu.segg3r.rental.ui;
 
+import java.awt.Component;
 import java.util.List;
 
-import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
 import by.gsu.segg3r.rental.exceptions.DaoException;
+import by.gsu.segg3r.rental.exceptions.UiException;
 import by.gsu.segg3r.rental.ifaces.IItemDao;
 import by.gsu.segg3r.rental.ifaces.IItemTableRepresentation;
-import by.gsu.segg3r.rental.ifaces.IItemUiStrings;
-import by.gsu.segg3r.rental.ui.util.UiErrorHandler;
-import by.gsu.segg3r.rental.ui.util.WindowBuilder;
 
-public class ItemTable<T> extends JTable {
+public class ItemTable<T> extends ItemHolderComponent<T> {
 
-	private static final long serialVersionUID = 1L;
-
-	private JFrame frame;
+	private JTable table;
 	private List<T> items;
-	private IItemDao<T> itemDao;
-	private IItemUiStrings<T> uiStrings;
 	private DefaultTableModel model;
 
-	public ItemTable() {
-		super();
-	}
+	public ItemTable(IItemDao<T> itemDao) throws DaoException {
+		super(itemDao);
+		
+		this.table = new JTable() {
+			private static final long serialVersionUID = 1L;
 
-	public ItemTable(JFrame frame, IItemDao<T> itemDao,
-			IItemUiStrings<T> uiStrings) throws DaoException {
-		super();
-		this.frame = frame;
-		this.itemDao = itemDao;
-		this.uiStrings = uiStrings;
-		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.model = new DefaultTableModel(new Object[][] {}, itemDao
 				.getItemTableRepresentation(itemDao.getNewItem())
 				.getTableHeader());
-		this.setModel(model);
+		table.setModel(model);
+	}
+	
+	public JTable getTable() {
+		return table;
 	}
 
-	@Override
-	public boolean isCellEditable(int row, int column) {
-		return false;
+	public void reset() throws UiException {
+		resetData();
+		resetModel(items);
 	}
 
-	public IItemDao<T> getItemDao() {
-		return itemDao;
-	}
-
-	public void reset() {
+	public void resetData() throws UiException {
 		try {
-			resetData();
-			resetModel(items);
+			this.items = getItemDao().getItems();
 		} catch (DaoException e) {
-			UiErrorHandler.handleError(e.getMessage());
+			throw new UiException(e);
 		}
 	}
 
-	public void resetData() throws DaoException {
-		this.items = itemDao.getItems();
-	}
-
-	public void resetModel(List<T> items) throws DaoException {
-		model.setRowCount(0);
-		for (T item : items) {
-			IItemTableRepresentation<T> itemTableRep = itemDao
-					.getItemTableRepresentation(item);
-			model.addRow(itemTableRep.getTableStringFields());
-		}
-	}
-
-	public void addItem() {
+	public void resetModel(List<T> items) throws UiException {
 		try {
-			T item = WindowBuilder.build(
-					new ItemDialog<T>(frame, uiStrings.getAddItemHeader(),
-							itemDao.getItemTableRepresentation(itemDao
-									.getNewItem()))).getItem();
-			if (item != null) {
-				itemDao.addItem(item);
-				reset();
+			model.setRowCount(0);
+			for (T item : items) {
+				IItemTableRepresentation<T> itemTableRep = getItemDao()
+						.getItemTableRepresentation(item);
+				model.addRow(itemTableRep.getTableStringFields());
 			}
 		} catch (DaoException e) {
-			UiErrorHandler.handleError(e.getMessage());
+			throw new UiException(e);
 		}
 	}
 
-	public void changeItem() {
-		try {
-			T item = WindowBuilder
-					.build(new ItemDialog<T>(frame, uiStrings
-							.getChangeItemHeader(), itemDao
-							.getItemTableRepresentation(getSelectedItem())))
-					.getItem();
-			if (item != null) {
-				itemDao.changeItem(item);
-				reset();
-			}
-		} catch (DaoException e) {
-			UiErrorHandler.handleError(e.getMessage());
-		}
-	}
-
-	public void deleteItem() {
-		try {
-			T item = getSelectedItem();
-			itemDao.deleteItem(item);
-			reset();
-		} catch (DaoException e) {
-			UiErrorHandler.handleError(e.getMessage());
-		}
-	}
-
-	protected T getSelectedItem() throws DaoException {
-		int selectedRow = getSelectedRow();
+	public T getSelectedItem() throws UiException {
+		int selectedRow = table.getSelectedRow();
 		if (selectedRow == -1) {
-			throw new DaoException("Выберите строку");
+			throw new UiException("Выберите строку");
 		}
 		return items.get(selectedRow);
 	}
 
 	public boolean isEmpty() {
-		return getRowCount() == 0;
+		return items.isEmpty();
 	}
 
 	public DefaultTableModel getModel() {
@@ -131,6 +83,11 @@ public class ItemTable<T> extends JTable {
 
 	public List<T> getItems() {
 		return items;
+	}
+
+	@Override
+	public Component getComponent() {
+		return table;
 	}
 
 }

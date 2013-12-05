@@ -63,7 +63,7 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 		JButton btnAddItem = new JButton("Добавить");
 		panel.add(btnAddItem);
 
-		JButton btnChangeItem = new JButton("Просмотр");
+		JButton btnChangeItem = new JButton("Изменить");
 		panel.add(btnChangeItem);
 
 		btnDeleteItem = new JButton("Удалить");
@@ -73,7 +73,7 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 				try {
 					itemDao.deleteItem(itemHolder.getSelectedItem());
 					itemHolder.reset();
-
+					scrollPane.revalidate();
 					checkDeleteButton();
 				} catch (UiException | DaoException e) {
 					UiErrorHandler.handleError(e.getMessage());
@@ -90,6 +90,7 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 											.getSelectedItem()))).getItem();
 					if (item != null) {
 						itemDao.changeItem(item);
+						scrollPane.revalidate();
 						itemHolder.reset();
 
 						checkDeleteButton();
@@ -110,7 +111,7 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 					if (item != null) {
 						itemDao.addItem(item);
 						itemHolder.reset();
-
+						scrollPane.revalidate();
 						checkDeleteButton();
 					}
 				} catch (UiException | DaoException e) {

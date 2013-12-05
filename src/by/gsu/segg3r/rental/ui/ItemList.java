@@ -3,6 +3,7 @@ package by.gsu.segg3r.rental.ui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -17,6 +18,8 @@ import by.gsu.segg3r.rental.ifaces.IItemTableRepresentation;
 public class ItemList<T> extends ItemHolderComponent<T> {
 
 	private JPanel panel;
+	private List<IItemTableRepresentation<T>> itemRepList;
+	private List<JSelectablePanel> panels;
 	
 	public ItemList(IItemDao<T> itemDao) {
 		super(itemDao);
@@ -28,7 +31,12 @@ public class ItemList<T> extends ItemHolderComponent<T> {
 
 	@Override
 	public T getSelectedItem() throws UiException {
-		return null;
+		for (JSelectablePanel panel : panels) {
+			if (panel.isSelected()) {
+				return itemRepList.get(panels.indexOf(panel)).getItem();
+			}
+		}
+		throw new UiException("Выберите сущность");
 	}
 
 	@Override
@@ -40,18 +48,26 @@ public class ItemList<T> extends ItemHolderComponent<T> {
 	public void resetModel(List<T> items) throws UiException {
 		try {
 			panel.removeAll();
-
 			
 			IItemDao<T> itemDao = getItemDao();
+			itemRepList = new ArrayList<IItemTableRepresentation<T>>();
+			panels = new ArrayList<JSelectablePanel>();
 			for (T item : items) {
-				JPanel outer = new JPanel();
+				JSelectablePanel outer = new JSelectablePanel();
 				outer.setBorder(BorderFactory.createLineBorder(Color.black));
 				
 				IItemTableRepresentation<T> tableRep = itemDao.getItemTableRepresentation(item);
-				Component component = tableRep.getChangableComponent();
+				JPanel selectablePanel = tableRep.getListComponent();
 				
-				outer.add(component);
+				itemRepList.add(tableRep);
+				panels.add(outer);
+				
+				outer.add(selectablePanel);
 				panel.add(outer);
+			}
+			
+			for (JSelectablePanel selectablePanel : panels) {
+				selectablePanel.setPanelList(panels);
 			}
 		} catch (DaoException e) {
 			throw new UiException(e);

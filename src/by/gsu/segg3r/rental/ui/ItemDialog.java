@@ -38,7 +38,7 @@ public class ItemDialog<T> extends JDialog implements IItemWindow {
 		this.itemTableRepresentation = itemTableRepresentation;
 		this.title = title;
 	}
-	
+
 	public void initializeFrame() {
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.setTitle(title);
@@ -53,11 +53,16 @@ public class ItemDialog<T> extends JDialog implements IItemWindow {
 	}
 
 	public Component getMainPanel() {
-		Component panel = itemTableRepresentation.getChangableComponent();		
-		
-		int height = itemTableRepresentation.getFieldCount(Visibility.TABLE_ONLY) * 25 + 100;
-		setBounds(frame.getX(), frame.getY(), 500, height);
-		
+		Component panel = itemTableRepresentation.getChangableComponent();
+
+		int height = itemTableRepresentation
+				.getFieldCount(Visibility.TABLE_ONLY) * 25 + 100;
+		if (frame != null) {
+			setBounds(frame.getX(), frame.getY(), 500, height);
+		} else {
+			setBounds(200, 200, 500, height);
+		}
+
 		return panel;
 	}
 

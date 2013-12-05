@@ -22,7 +22,7 @@ public class TextItemField extends IItemField<String> {
 			component = textField;
 		} else {
 			JPanel panel = new JPanel();
-			panel.setLayout(new BorderLayout());
+			panel.setLayout(new BorderLayout(5, 5));
 			panel.add(textField, BorderLayout.CENTER);
 			panel.add(new JLabel(postfix), BorderLayout.EAST);
 			

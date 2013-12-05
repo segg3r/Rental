@@ -74,7 +74,9 @@ public abstract class IItemTableRepresentation<T> {
 		return inner;
 	}
 	
-	public abstract Component getListComponent();
+	public JPanel getListComponent() {
+		return null;
+	}
 	
 	public int getFieldCount(Visibility excluding) {
 		int count = 0;

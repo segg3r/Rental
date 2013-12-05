@@ -11,16 +11,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import by.gsu.segg3r.rental.impl.firm.FirmDaoImplDb;
-import by.gsu.segg3r.rental.impl.firm.FirmUiStrings;
-import by.gsu.segg3r.rental.impl.itemtypes.ItemTypeDaoImplDb;
-import by.gsu.segg3r.rental.impl.itemtypes.ItemTypeUiStrings;
-import by.gsu.segg3r.rental.impl.rentalitem.RentalItemDaoImplDb;
-import by.gsu.segg3r.rental.impl.rentalitem.RentalItemUiStrings;
-import by.gsu.segg3r.rental.ui.firms.FirmItemFrame;
-import by.gsu.segg3r.rental.ui.itemtypes.ItemTypeItemFrame;
-import by.gsu.segg3r.rental.ui.rentalitems.RentalItemItemFrame;
-import by.gsu.segg3r.rental.ui.util.WindowBuilder;
+import by.gsu.segg3r.rental.factories.WindowFactory;
 
 public class MainFrame extends JFrame {
 
@@ -44,8 +35,7 @@ public class MainFrame extends JFrame {
 		JMenuItem firmsMenuItem = new JMenuItem("Фирмы");
 		firmsMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				WindowBuilder.build(new FirmItemFrame(new FirmDaoImplDb(), new FirmUiStrings()))
-						.setVisible(true);
+				WindowFactory.getFirmFrame().setVisible(true);
 			}
 		});
 		mnFirmMenu.add(firmsMenuItem);
@@ -54,8 +44,7 @@ public class MainFrame extends JFrame {
 				"\u0422\u0438\u043F\u044B \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u043E\u0432");
 		itemTypesMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				WindowBuilder.build(new ItemTypeItemFrame(new ItemTypeDaoImplDb(),
-						new ItemTypeUiStrings())).setVisible(true);
+				WindowFactory.getItemTypeFrame().setVisible(true);
 			}
 		});
 		mnFirmMenu.add(itemTypesMenuItem);
@@ -64,9 +53,7 @@ public class MainFrame extends JFrame {
 				"\u041F\u0440\u0435\u0434\u043C\u0435\u0442\u044B \u043F\u0440\u043E\u043A\u0430\u0442\u0430");
 		rentalItemsMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				WindowBuilder.build(new RentalItemItemFrame(new RentalItemDaoImplDb(
-						new FirmDaoImplDb(), new ItemTypeDaoImplDb()),
-						new RentalItemUiStrings())).setVisible(true);
+				WindowFactory.getRentalItemFrame().setVisible(true);
 			}
 		});
 		mnFirmMenu.add(rentalItemsMenuItem);

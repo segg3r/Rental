@@ -1,4 +1,4 @@
-import by.gsu.segg3r.rental.ui.MainFrame;
+import by.gsu.paveldzunovich.rental.ui.MainFrame;
 
 public class Runner {
 

@@ -1,6 +1,7 @@
 package by.gsu.paveldzunovich.rental.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -57,9 +58,20 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 	}
 
 	public JComponent getButtonPanel() {
-		JPanel panel = new JPanel();
-		contentPanel.add(panel, BorderLayout.SOUTH);
-		panel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+		JPanel outer = new JPanel(new BorderLayout(5, 5));
+
+		outer.add(getMainButtonPanel(), BorderLayout.EAST);
+		outer.add(getAdditionalButtonPanel(), BorderLayout.CENTER);
+		
+		return outer;
+	}
+
+	protected Component getAdditionalButtonPanel() {
+		return new JPanel();
+	}
+
+	private Component getMainButtonPanel() {
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
 
 		JButton btnAddItem = new JButton("Добавить");
 		panel.add(btnAddItem);

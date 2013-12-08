@@ -53,7 +53,7 @@ public class MainFrame extends JFrame {
 				"\u041F\u0440\u0435\u0434\u043C\u0435\u0442\u044B \u043F\u0440\u043E\u043A\u0430\u0442\u0430");
 		rentalItemsMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				WindowFactory.getRentalItemFrame().setVisible(true);
+				WindowFactory.getRentalItemItemFrame().setVisible(true);
 			}
 		});
 		mnFirmMenu.add(rentalItemsMenuItem);
@@ -97,6 +97,22 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnFirmMenu.add(mntmNewMenuItem_3);
+		
+		JMenuItem mntmNewMenuItem_4 = new JMenuItem("\u041F\u0440\u043E\u043A\u0430\u0442\u044B");
+		mntmNewMenuItem_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WindowFactory.getRentalItemFrame().setVisible(true);
+			}
+		});
+		mnFirmMenu.add(mntmNewMenuItem_4);
+		
+		JMenuItem mntmNewMenuItem_5 = new JMenuItem("\u041E\u043F\u043B\u0430\u0442\u044B");
+		mntmNewMenuItem_5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				WindowFactory.getPayItemFrame().setVisible(true);
+			}
+		});
+		mnFirmMenu.add(mntmNewMenuItem_5);
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

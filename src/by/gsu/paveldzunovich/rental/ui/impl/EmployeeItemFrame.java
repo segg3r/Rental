@@ -1,4 +1,4 @@
-package by.gsu.paveldzunovich.rental.ui.employee;
+package by.gsu.paveldzunovich.rental.ui.impl;
 
 import by.gsu.paveldzunovich.rental.exceptions.DaoException;
 import by.gsu.paveldzunovich.rental.ifaces.IItemDao;

@@ -12,20 +12,26 @@ import by.gsu.paveldzunovich.rental.impl.itemtypes.ItemTypeDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.itemtypes.ItemTypeUiStrings;
 import by.gsu.paveldzunovich.rental.impl.job.JobDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.job.JobUiStrings;
+import by.gsu.paveldzunovich.rental.impl.pay.PayDaoImplDb;
+import by.gsu.paveldzunovich.rental.impl.pay.PayUiStrings;
 import by.gsu.paveldzunovich.rental.impl.paytype.PayTypeDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.paytype.PayTypeUiStrings;
+import by.gsu.paveldzunovich.rental.impl.rental.RentalDaoImplDb;
+import by.gsu.paveldzunovich.rental.impl.rental.RentalUiStrings;
 import by.gsu.paveldzunovich.rental.impl.rentalitem.RentalItemDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.rentalitem.RentalItemUiStrings;
 import by.gsu.paveldzunovich.rental.model.Damage;
 import by.gsu.paveldzunovich.rental.model.Job;
+import by.gsu.paveldzunovich.rental.model.Pay;
 import by.gsu.paveldzunovich.rental.model.PayType;
+import by.gsu.paveldzunovich.rental.model.Rental;
 import by.gsu.paveldzunovich.rental.ui.ItemFrame;
-import by.gsu.paveldzunovich.rental.ui.clients.ClientItemFrame;
-import by.gsu.paveldzunovich.rental.ui.employee.EmployeeItemFrame;
 import by.gsu.paveldzunovich.rental.ui.filter.FilterItemFrame;
-import by.gsu.paveldzunovich.rental.ui.firms.FirmItemFrame;
-import by.gsu.paveldzunovich.rental.ui.itemtypes.ItemTypeItemFrame;
-import by.gsu.paveldzunovich.rental.ui.rentalitems.RentalItemItemFrame;
+import by.gsu.paveldzunovich.rental.ui.impl.ClientItemFrame;
+import by.gsu.paveldzunovich.rental.ui.impl.EmployeeItemFrame;
+import by.gsu.paveldzunovich.rental.ui.impl.FirmItemFrame;
+import by.gsu.paveldzunovich.rental.ui.impl.ItemTypeItemFrame;
+import by.gsu.paveldzunovich.rental.ui.impl.RentalItemItemFrame;
 import by.gsu.paveldzunovich.rental.ui.util.WindowBuilder;
 
 public class WindowFactory {
@@ -40,7 +46,7 @@ public class WindowFactory {
 				new ItemTypeDaoImplDb(), new ItemTypeUiStrings()));
 	}
 
-	public static RentalItemItemFrame getRentalItemFrame() {
+	public static RentalItemItemFrame getRentalItemItemFrame() {
 		return WindowBuilder.build(new RentalItemItemFrame(
 				new RentalItemDaoImplDb(new FirmDaoImplDb(),
 						new ItemTypeDaoImplDb()), new RentalItemUiStrings()));
@@ -71,4 +77,18 @@ public class WindowFactory {
 				new JobDaoImplDb()), new EmployeeUiStrings()));
 	}
 
+	public static ItemFrame<Rental> getRentalItemFrame() {
+		return WindowBuilder.build(new ItemFrame<Rental>(new RentalDaoImplDb(
+				new RentalItemDaoImplDb(new FirmDaoImplDb(),
+						new ItemTypeDaoImplDb()), new ClientDaoImplDb(),
+				new EmployeeDaoImplDb(new JobDaoImplDb())),
+				new RentalUiStrings()));
+	}
+
+	public static ItemFrame<Pay> getPayItemFrame() {
+		return WindowBuilder.build(new ItemFrame<Pay>(new PayDaoImplDb(new PayTypeDaoImplDb(), new RentalDaoImplDb(
+				new RentalItemDaoImplDb(new FirmDaoImplDb(),
+						new ItemTypeDaoImplDb()), new ClientDaoImplDb(),
+				new EmployeeDaoImplDb(new JobDaoImplDb()))), new PayUiStrings()));
+	}
 }

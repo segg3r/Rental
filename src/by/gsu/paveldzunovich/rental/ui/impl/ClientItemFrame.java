@@ -1,4 +1,4 @@
-package by.gsu.paveldzunovich.rental.ui.clients;
+package by.gsu.paveldzunovich.rental.ui.impl;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;

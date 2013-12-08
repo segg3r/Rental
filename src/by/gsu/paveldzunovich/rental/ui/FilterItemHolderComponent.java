@@ -10,16 +10,15 @@ import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
 public abstract class FilterItemHolderComponent<T> extends
 		ItemHolderComponent<T> implements IFilterItemHolder<T> {
 
-	private IFilter<T>[] filters;
+	private List<IFilter<T>> filters;
 	private List<T> filteredItems;
 
 	public FilterItemHolderComponent(IItemDao<T> itemDao) {
 		super(itemDao);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public void filter(IFilter<T>... filters) throws UiException {
+	public void filter(List<IFilter<T>> filters) throws UiException {
 		this.filters = filters;
 		filterWithCurrentFilters();
 	}

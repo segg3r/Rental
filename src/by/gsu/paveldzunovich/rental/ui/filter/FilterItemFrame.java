@@ -1,11 +1,19 @@
 package by.gsu.paveldzunovich.rental.ui.filter;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -31,8 +39,30 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 	}
 
 	public JComponent getUpperPanel() {
-		JPanel filterPanel = new JPanel();
-		filterPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		JPanel filterOuter = new JPanel(new BorderLayout(5, 5));
+		filterOuter.add(getFilterPanel(), BorderLayout.CENTER);
+		filterOuter.setBorder(new EmptyBorder(5, 5, 5, 5));
+		
+		JButton clearFilters = new JButton("Очистить фильтры");
+		clearFilters.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				clearFilters();
+			}
+		
+		});
+		
+		filterOuter.add(clearFilters, BorderLayout.EAST);
+		return filterOuter;
+	}
+
+	protected void clearFilters() {
+		filterTextField.setText("");
+	}
+
+	protected Component getFilterPanel() {
+		JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
 		filterPanel.add(new JLabel("Фильтр: "));
 
@@ -61,31 +91,39 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 			FilterItemHolderComponent<T> filterItemComponent) {
 		this.filterItemComponent = filterItemComponent;
 	}
+	
+	public FilterItemHolderComponent<T> getFilterItemHolderComponent() {
+		return filterItemComponent;
+	}
 
-	@SuppressWarnings("unchecked")
 	private DocumentListener getFilterListener() {
 		return new DocumentListener() {
 
 			@Override
 			public void changedUpdate(DocumentEvent ev) {
-				filter(new StringFilter<T>(filterTextField.getText()));
+				filterWithText(new StringFilter<T>(filterTextField.getText()));
 			}
 
 			@Override
 			public void insertUpdate(DocumentEvent ev) {
-				filter(new StringFilter<T>(filterTextField.getText()));
+				filterWithText(new StringFilter<T>(filterTextField.getText()));
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent ev) {
-				filter(new StringFilter<T>(filterTextField.getText()));
+				filterWithText(new StringFilter<T>(filterTextField.getText()));
+			}
+			
+			private void filterWithText(StringFilter<T> stringFilter) {
+				List<IFilter<T>> filters = new ArrayList<IFilter<T>>();
+				filters.add(stringFilter);
+				filter(filters);
 			}
 
 		};
 	}
 
-	@SuppressWarnings("unchecked")
-	public void filter(final IFilter<T>... filters) {
+	public void filter(final List<IFilter<T>> filters) {
 		new Thread(new Runnable() {
 
 			@Override

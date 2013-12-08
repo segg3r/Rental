@@ -1,7 +1,5 @@
-package by.gsu.paveldzunovich.rental.ui.firms;
+package by.gsu.paveldzunovich.rental.ui.impl;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,36 +14,30 @@ import by.gsu.paveldzunovich.rental.factories.WindowFactory;
 import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
 import by.gsu.paveldzunovich.rental.ifaces.IItemHolder;
 import by.gsu.paveldzunovich.rental.ifaces.IUiStrings;
-import by.gsu.paveldzunovich.rental.impl.filters.StringFilter;
 import by.gsu.paveldzunovich.rental.impl.firm.FirmDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.itemtypes.ItemTypeDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.rentalitem.RentalItemDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.rentalitem.RentalItemUiStrings;
-import by.gsu.paveldzunovich.rental.model.Firm;
+import by.gsu.paveldzunovich.rental.model.ItemType;
 import by.gsu.paveldzunovich.rental.model.RentalItem;
 import by.gsu.paveldzunovich.rental.ui.ItemDialog;
 import by.gsu.paveldzunovich.rental.ui.filter.FilterItemFrame;
-import by.gsu.paveldzunovich.rental.ui.rentalitems.RentalItemItemFrame;
 import by.gsu.paveldzunovich.rental.ui.util.UiErrorHandler;
 import by.gsu.paveldzunovich.rental.ui.util.WindowBuilder;
 
-public class FirmItemFrame extends FilterItemFrame<Firm> {
+public class ItemTypeItemFrame extends FilterItemFrame<ItemType> {
 
 	private static final long serialVersionUID = 1L;
 
-	public FirmItemFrame(IItemDao<Firm> itemDao, IUiStrings<Firm> uiStrings) {
+
+	public ItemTypeItemFrame(IItemDao<ItemType> itemDao,
+			IUiStrings<ItemType> uiStrings) {
 		super(itemDao, uiStrings);
 	}
-
-	public JComponent getButtonPanel() {
-		Component mainButtonPanel = super.getButtonPanel();
-
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new BorderLayout());
-
-		JPanel additionalButtonPanel = new JPanel();
-		additionalButtonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-
+	
+	public JComponent getAdditionalButtonPanel() {
+		JPanel additionalButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		
 		JButton addItemButton = new JButton("Добавить вещь");
 		addItemButton.addActionListener(new ActionListener() {
 
@@ -53,16 +45,16 @@ public class FirmItemFrame extends FilterItemFrame<Firm> {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					RentalItem item = new RentalItem();
-					item.setFirm(getItemHolder().getSelectedItem());
+					item.setItemType(getItemHolder().getSelectedItem());
 					
 					IItemDao<RentalItem> itemDao = new RentalItemDaoImplDb(
 							new FirmDaoImplDb(),
 							new ItemTypeDaoImplDb());
 
 					item = WindowBuilder.build(
-							new ItemDialog<RentalItem>(FirmItemFrame.this,
+							new ItemDialog<RentalItem>(ItemTypeItemFrame.this,
 									new RentalItemUiStrings()
-											.getAddItemHeader(),
+											.getChangeItemHeader(),
 											itemDao.getItemTableRepresentation(item)))
 							.getItem();
 					
@@ -73,25 +65,19 @@ public class FirmItemFrame extends FilterItemFrame<Firm> {
 					UiErrorHandler.handleError(ex.getMessage());
 				}
 			}
-
 		});
-
+		
 		JButton showItemsButton = new JButton("Показать вещи");
 		showItemsButton.addActionListener(new ActionListener() {
 
-			@SuppressWarnings("unchecked")
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				try {
-					IItemHolder<Firm> itemTable = getItemHolder();
-					Firm item = itemTable.getSelectedItem();
-					String filter = item.toString();
+					IItemHolder<ItemType> itemTable = getItemHolder();
+					ItemType item = itemTable.getSelectedItem();
 
-					RentalItemItemFrame rentalItemItemFrame = WindowFactory
-							.getRentalItemFrame();
-					rentalItemItemFrame.getFilterTextField().setText(filter);
-					rentalItemItemFrame.filter(new StringFilter<RentalItem>(
-							filter));
+					RentalItemItemFrame rentalItemItemFrame = WindowFactory.getRentalItemItemFrame();
+					rentalItemItemFrame.getItemTypeFilter().setSelectedItem(item);
 					rentalItemItemFrame.setVisible(true);
 
 				} catch (UiException e) {
@@ -102,10 +88,8 @@ public class FirmItemFrame extends FilterItemFrame<Firm> {
 		});
 		additionalButtonPanel.add(addItemButton);
 		additionalButtonPanel.add(showItemsButton);
-
-		buttonPanel.add(mainButtonPanel, BorderLayout.CENTER);
-		buttonPanel.add(additionalButtonPanel, BorderLayout.WEST);
-		return buttonPanel;
-
-	}
+		
+		return additionalButtonPanel;
+	}	
+	
 }

@@ -3,104 +3,81 @@ package by.gsu.paveldzunovich.rental.impl.itemfields;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import by.gsu.paveldzunovich.rental.exceptions.DaoException;
-import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
+import by.gsu.paveldzunovich.rental.factories.WindowFactory;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField;
-import by.gsu.paveldzunovich.rental.ifaces.IUiStrings;
-import by.gsu.paveldzunovich.rental.ui.ItemDialog;
-import by.gsu.paveldzunovich.rental.ui.util.UiErrorHandler;
-import by.gsu.paveldzunovich.rental.ui.util.WindowBuilder;
+import by.gsu.paveldzunovich.rental.ui.ItemFrame;
+import by.gsu.paveldzunovich.rental.ui.SelectDialog;
 
 public class SelectionItemField<T> extends AbstractItemField<T> {
 
-	private List<T> items;
-	private IItemDao<T> itemDao;
-	private JComboBox<String> comboBox;
-	private IUiStrings<T> uiStrings;
 	private boolean readOnly;
 
-	public SelectionItemField(String name, IItemDao<T> itemDao,
-			IUiStrings<T> uiStrings, T activeItem, Visibility visibility, boolean readOnly)
-			throws DaoException {
+	private T item;
+	private JLabel label;
+
+	public SelectionItemField(String name, T activeItem, Visibility visibility,
+			boolean readOnly) {
 		super(name, visibility);
-		this.comboBox = new JComboBox<String>();
-		this.items = itemDao.getItems();
-		this.itemDao = itemDao;
-		this.uiStrings = uiStrings;
-		
+		this.item = activeItem;
 		this.readOnly = readOnly;
 
-		for (T item : items) {
-			comboBox.addItem(item.toString());
-
-			if (activeItem.equals(item)) {
-				comboBox.setSelectedIndex(items.indexOf(item));
-			}
-		}
-	}
-	
-	public SelectionItemField(String name, IItemDao<T> itemDao,
-			IUiStrings<T> uiStrings, T activeItem, boolean readOnly) throws DaoException {
-		this(name, itemDao, uiStrings, activeItem, Visibility.VISIBLE, readOnly);
+		this.label = new JLabel();
+		setLabelText(item.toString());
 	}
 
-	public SelectionItemField(String name, IItemDao<T> itemDao,
-			IUiStrings<T> uiStrings, T activeItem) throws DaoException {
-		this(name, itemDao, uiStrings, activeItem, Visibility.VISIBLE, false);
+	public SelectionItemField(String name, T activeItem, boolean readOnly) {
+		this(name, activeItem, Visibility.VISIBLE, readOnly);
+	}
+
+	public SelectionItemField(String name, T activeItem) {
+		this(name, activeItem, Visibility.VISIBLE, false);
 	}
 
 	@Override
 	public T getValue() {
-		return items.get(comboBox.getSelectedIndex());
+		return item;
 	}
 
 	@Override
 	public String getStringValue() {
-		return (String) comboBox.getSelectedItem();
+		return item.toString();
 	}
 
 	@Override
 	public JComponent getComponent() {
 		JPanel panel = new JPanel(new BorderLayout(5, 5));
-		panel.add(comboBox, BorderLayout.CENTER);
+		JButton button = new JButton("Выбрать");
+		button.setEnabled(!readOnly);
+		panel.add(label, BorderLayout.CENTER);
+		panel.add(button, BorderLayout.EAST);
 
-		JButton addButton = new JButton("+");
-		addButton.addActionListener(new ActionListener() {
+		button.addActionListener(new ActionListener() {
 
+			@SuppressWarnings("unchecked")
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					T item = WindowBuilder.build(
-							new ItemDialog<T>(null, uiStrings
-									.getAddItemHeader(), itemDao
-									.getItemTableRepresentation(itemDao
-											.getNewItem()))).getItem();
-					if (item != null) {
-						itemDao.addItem(item);
-						items = itemDao.getItems();
-						
-						comboBox.addItem(item.toString());
-						comboBox.setSelectedIndex(items.size() - 1);
-					}
-				} catch (DaoException e) {
-					UiErrorHandler.handleError(e.getMessage());
+			public void actionPerformed(ActionEvent e) {
+				Class<?> cl = item.getClass();
+				ItemFrame<T> itemFrame = (ItemFrame<T>) WindowFactory
+						.getFrameByClass(cl);
+				T retItem = new SelectDialog<T>(itemFrame).getItem();
+				if (retItem != null) {
+					item = retItem;
+					setLabelText(item.toString());
 				}
 			}
-
 		});
 
-		panel.add(addButton, BorderLayout.EAST);
-		
-		comboBox.setEnabled(!readOnly);
-		addButton.setEnabled(!readOnly);
 		return panel;
+	}
+
+	protected void setLabelText(String string) {
+		label.setText((string.equals("") ? "-" : string));		
 	}
 
 }

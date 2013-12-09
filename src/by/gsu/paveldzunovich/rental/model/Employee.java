@@ -63,7 +63,7 @@ public class Employee {
 	}
 	
 	public String toString() {
-		return name;
+		return id == 0 ? "" : name;
 	}
 
 	public boolean equals(Object obj) {

@@ -19,10 +19,10 @@ public class DamageDaoImplDb extends AbstractDaoImplDb<Damage> {
 
 	@Override
 	public AbstractTableRepresentation<Damage> getItemTableRepresentation(
-			Damage item) throws DaoException {
+			Damage item) {
 		this.rentalItemDao = new RentalItemDaoImplDb(new FirmDaoImplDb(),
 				new ItemTypeDaoImplDb());
-		return new DamageTableRepresentation(item, rentalItemDao);
+		return new DamageTableRepresentation(item);
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package by.gsu.paveldzunovich.rental.ui.filter;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,7 +11,6 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -20,10 +18,11 @@ import javax.swing.event.DocumentListener;
 import by.gsu.paveldzunovich.rental.exceptions.DaoException;
 import by.gsu.paveldzunovich.rental.exceptions.UiException;
 import by.gsu.paveldzunovich.rental.ifaces.IFilter;
+import by.gsu.paveldzunovich.rental.ifaces.IFilterField;
 import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
 import by.gsu.paveldzunovich.rental.ifaces.IItemHolder;
 import by.gsu.paveldzunovich.rental.ifaces.IUiStrings;
-import by.gsu.paveldzunovich.rental.impl.filters.StringFilter;
+import by.gsu.paveldzunovich.rental.impl.filterfields.StringFilterField;
 import by.gsu.paveldzunovich.rental.ui.FilterItemHolderComponent;
 import by.gsu.paveldzunovich.rental.ui.ItemFrame;
 import by.gsu.paveldzunovich.rental.ui.util.UiErrorHandler;
@@ -32,7 +31,8 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 
 	private static final long serialVersionUID = 1L;
 	private FilterItemHolderComponent<T> filterItemComponent;
-	private JTextField filterTextField;
+	private JPanel filterPanel;
+	private List<IFilterField<T>> filterFields = new ArrayList<IFilterField<T>>();
 
 	public FilterItemFrame(IItemDao<T> itemDao, IUiStrings<T> uiStrings) {
 		super(itemDao, uiStrings);
@@ -58,23 +58,32 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 	}
 
 	protected void clearFilters() {
-		filterTextField.setText("");
+		for (IFilterField<T> filterField : filterFields) {
+			filterField.clearFilter();
+		}
+	}
+	
+	protected ActionListener getFilterActionListener() {
+		return new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				filter();
+			}
+			
+		};
 	}
 
-	protected Component getFilterPanel() {
-		JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
-		filterPanel.add(new JLabel("Фильтр: "));
-
-		filterTextField = new JTextField("", 20);
-		filterPanel.add(filterTextField);
-		filterTextField.getDocument().addDocumentListener(getFilterListener());
-
+	protected JPanel getFilterPanel() {
+		filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		addFilter(new StringFilterField<T>("Фильтр: ", getFilterListener()));
 		return filterPanel;
 	}
 
-	public JTextField getFilterTextField() {
-		return filterTextField;
+	protected void addFilter(IFilterField<T> filterField) {
+		filterPanel.add(new JLabel(filterField.getName()));
+		filterPanel.add(filterField.getComponent());
+		filterFields.add(filterField);
 	}
 
 	public IItemHolder<T> createItemHolder() throws DaoException {
@@ -101,26 +110,29 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 
 			@Override
 			public void changedUpdate(DocumentEvent ev) {
-				filterWithText(new StringFilter<T>(filterTextField.getText()));
+				filter();
 			}
 
 			@Override
 			public void insertUpdate(DocumentEvent ev) {
-				filterWithText(new StringFilter<T>(filterTextField.getText()));
+				filter();
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent ev) {
-				filterWithText(new StringFilter<T>(filterTextField.getText()));
+				filter();
 			}
-			
-			private void filterWithText(StringFilter<T> stringFilter) {
-				List<IFilter<T>> filters = new ArrayList<IFilter<T>>();
-				filters.add(stringFilter);
-				filter(filters);
-			}
-
 		};
+	}
+	
+	protected void filter() {
+		List<IFilter<T>> filters = new ArrayList<IFilter<T>>();
+		for (IFilterField<T> filterField : filterFields) {
+			if (filterField.doFilter()) {
+				filters.add(filterField.getFilter());
+			}
+		}
+		filter(filters);
 	}
 
 	public void filter(final List<IFilter<T>> filters) {

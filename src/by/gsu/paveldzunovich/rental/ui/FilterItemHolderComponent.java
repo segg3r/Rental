@@ -35,6 +35,7 @@ public abstract class FilterItemHolderComponent<T> extends
 	}
 
 	public void reset() throws UiException {
+		System.out.println("reset");
 		resetData();
 		filterWithCurrentFilters();
 		resetModel(filteredItems);

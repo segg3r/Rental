@@ -8,16 +8,12 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import by.gsu.paveldzunovich.rental.exceptions.DaoException;
-import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField;
-import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField.Visibility;
-import by.gsu.paveldzunovich.rental.impl.firm.FirmUiStrings;
+import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
 import by.gsu.paveldzunovich.rental.impl.itemfields.LabelItemField;
 import by.gsu.paveldzunovich.rental.impl.itemfields.SelectionItemField;
 import by.gsu.paveldzunovich.rental.impl.itemfields.TextItemField;
-import by.gsu.paveldzunovich.rental.impl.itemtypes.ItemTypeUiStrings;
 import by.gsu.paveldzunovich.rental.model.Firm;
 import by.gsu.paveldzunovich.rental.model.ItemType;
 import by.gsu.paveldzunovich.rental.model.RentalItem;
@@ -31,14 +27,13 @@ public class RentalItemTableRepresentation extends
 	private AbstractItemField<String> inventoryNumber;
 	private AbstractItemField<String> totalEarnings;
 
-	public RentalItemTableRepresentation(RentalItem item,
-			IItemDao<Firm> firmDao, IItemDao<ItemType> itemTypeDao)
-			throws DaoException {
+	public RentalItemTableRepresentation(RentalItem item) {
 		super(item);
-		firm = new SelectionItemField<Firm>("Фирма", firmDao,
-				new FirmUiStrings(), item.getFirm(), (item.getId() == 0 && item.getFirm().getId() != 0));
-		itemType = new SelectionItemField<ItemType>("Вид техники", itemTypeDao,
-				new ItemTypeUiStrings(), item.getItemType(),  (item.getId() == 0 && item.getItemType().getId() != 0));
+		firm = new SelectionItemField<Firm>("Фирма", item.getFirm(),
+				(item.getId() == 0 && item.getFirm().getId() != 0));
+		itemType = new SelectionItemField<ItemType>("Вид техники",
+				item.getItemType(), (item.getId() == 0 && item.getItemType()
+						.getId() != 0));
 		dailyCost = new TextItemField("Дневная стоимость", String.valueOf(item
 				.getDailyCost()), "руб.");
 		inventoryNumber = new TextItemField("Инвентарный номер",
@@ -50,8 +45,8 @@ public class RentalItemTableRepresentation extends
 
 	@Override
 	public AbstractItemField<?>[] getFields() {
-		return new AbstractItemField[] { totalEarnings, itemType, firm, dailyCost,
-				inventoryNumber };
+		return new AbstractItemField[] { totalEarnings, itemType, firm,
+				dailyCost, inventoryNumber };
 	}
 
 	@Override

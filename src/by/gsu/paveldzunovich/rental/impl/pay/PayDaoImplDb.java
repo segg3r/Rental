@@ -14,18 +14,15 @@ import by.gsu.paveldzunovich.rental.model.Rental;
 public class PayDaoImplDb extends AbstractDaoImplDb<Pay> {
 
 	private IItemDao<Rental> rentalDao;
-	private IItemDao<PayType> payTypeDao;
 
-	public PayDaoImplDb(IItemDao<PayType> payTypeDao, IItemDao<Rental> rentalDao) {
+	public PayDaoImplDb(IItemDao<Rental> rentalDao) {
 		super();
 		this.rentalDao = rentalDao;
-		this.payTypeDao = payTypeDao;
 	}
 
 	@Override
-	public AbstractTableRepresentation<Pay> getItemTableRepresentation(Pay item)
-			throws DaoException {
-		return new PayTableRepresentation(item, payTypeDao, rentalDao);
+	public AbstractTableRepresentation<Pay> getItemTableRepresentation(Pay item) {
+		return new PayTableRepresentation(item);
 	}
 
 	@Override

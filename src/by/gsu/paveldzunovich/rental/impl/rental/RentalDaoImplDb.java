@@ -9,28 +9,23 @@ import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
 import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
 import by.gsu.paveldzunovich.rental.model.Client;
 import by.gsu.paveldzunovich.rental.model.Employee;
+import by.gsu.paveldzunovich.rental.model.Job;
 import by.gsu.paveldzunovich.rental.model.Rental;
 import by.gsu.paveldzunovich.rental.model.RentalItem;
 
 public class RentalDaoImplDb extends AbstractDaoImplDb<Rental> {
 
-	private IItemDao<Employee> employeeDao;
 	private IItemDao<RentalItem> rentalItemDao;
-	private IItemDao<Client> clientDao;
 
-	public RentalDaoImplDb(IItemDao<RentalItem> rentalItemDao,
-			IItemDao<Client> clientDao, IItemDao<Employee> employeeDao) {
+	public RentalDaoImplDb(IItemDao<RentalItem> rentalItemDao) {
 		super();
 		this.rentalItemDao = rentalItemDao;
-		this.clientDao = clientDao;
-		this.employeeDao = employeeDao;
 	}
 
 	@Override
 	public AbstractTableRepresentation<Rental> getItemTableRepresentation(
-			Rental item) throws DaoException {
-		return new RentalTableRepresentation(item, rentalItemDao, employeeDao,
-				clientDao);
+			Rental item) {
+		return new RentalTableRepresentation(item);
 	}
 
 	@Override
@@ -40,16 +35,23 @@ public class RentalDaoImplDb extends AbstractDaoImplDb<Rental> {
 
 	@Override
 	public String getIdQuery() {
-		return "select idВещи, idРаботника, idКлиента, ДатаВыдачи, ДатаВозврата, Стоимость from Прокат where id = ?";
+		return "select idВещи, idРаботника, idКлиента, ДатаВыдачи, ДатаВозврата, Стоимость," // 6
+				+ "ФИО, Телефон, "
+				+ // 8
+				"ФИО_Работника, Телефон_Работника, Адрес, idДолжности, Название, Зарплата"
+				+ // 14
+				" from rental_view where id = ?";
 	}
 
 	@Override
 	public Rental getItemFromIdQuery(int id, ResultSet rs) throws SQLException {
 		try {
 			return new Rental(id, rentalItemDao.getItemById(rs.getInt(1)),
-					employeeDao.getItemById(rs.getInt(2)),
-					clientDao.getItemById(rs.getInt(3)), rs.getDate(4),
-					rs.getDate(5), rs.getInt(6));
+					new Employee(rs.getInt(2), new Job(rs.getInt(12), rs
+							.getString(13), rs.getInt(14)), rs.getString(9), rs
+							.getString(10), rs.getString(11)), new Client(
+							rs.getInt(3), rs.getString(7), rs.getString(8)),
+					rs.getDate(4), rs.getDate(5), rs.getInt(6));
 		} catch (DaoException e) {
 			throw new SQLException(e);
 		}
@@ -57,18 +59,24 @@ public class RentalDaoImplDb extends AbstractDaoImplDb<Rental> {
 
 	@Override
 	public String getListQuery() {
-		return "select id, idВещи, idРаботника, idКлиента, ДатаВыдачи, ДатаВозврата, Стоимость from Прокат";
+		return "select id, idВещи, idРаботника, idКлиента, ДатаВыдачи, ДатаВозврата, Стоимость," // 6
+				+ "ФИО, Телефон, "
+				+ // 8
+				"ФИО_Работника, Телефон_Работника, Адрес, idДолжности, Название, Зарплата"
+				+ // 14
+				" from rental_view";
 	}
 
 	@Override
 	public Rental getItemFromListQuery(ResultSet rs) throws SQLException {
 		try {
 			return new Rental(rs.getInt(1), rentalItemDao.getItemById(rs
-					.getInt(2)), employeeDao.getItemById(rs.getInt(3)),
-					clientDao.getItemById(rs.getInt(4)), rs.getDate(5),
-					rs.getDate(6), rs.getInt(7));
+					.getInt(2)), new Employee(rs.getInt(3), new Job(
+					rs.getInt(13), rs.getString(14), rs.getInt(15)),
+					rs.getString(10), rs.getString(11), rs.getString(12)),
+					new Client(rs.getInt(4), rs.getString(8), rs.getString(9)),
+					rs.getDate(5), rs.getDate(6), rs.getInt(7));
 		} catch (DaoException e) {
-			e.printStackTrace();
 			throw new SQLException(e);
 		}
 	}
@@ -92,8 +100,8 @@ public class RentalDaoImplDb extends AbstractDaoImplDb<Rental> {
 				+ ", idКлиента = " + item.getClient().getId()
 				+ ", idРаботника = " + item.getEmployee().getId()
 				+ ", ДатаВыдачи = '" + item.getBeginDate()
-				+ "', ДатаВозврата = '" + item.getEndDate()
-				+ "', Стоимость = " + item.getTotalCost() + " where id = " + item.getId(); 			
+				+ "', ДатаВозврата = '" + item.getEndDate() + "', Стоимость = "
+				+ item.getTotalCost() + " where id = " + item.getId();
 	}
 
 	@Override

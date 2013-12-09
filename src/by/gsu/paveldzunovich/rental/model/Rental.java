@@ -88,7 +88,7 @@ public class Rental {
 	}
 	
 	public String toString() {
-		return "(№" + id + ") Клиент: " +  client + " Предмет: " + rentalItem;
+		return id == 0 ? "" : "(№" + id + ") Клиент: " +  client + " Предмет: " + rentalItem;
 	}
 	
 	public boolean equals(Object obj) {

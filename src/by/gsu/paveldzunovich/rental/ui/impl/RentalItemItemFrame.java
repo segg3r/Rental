@@ -1,32 +1,36 @@
 package by.gsu.paveldzunovich.rental.ui.impl;
 
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Date;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import by.gsu.paveldzunovich.rental.exceptions.DaoException;
 import by.gsu.paveldzunovich.rental.exceptions.UiException;
-import by.gsu.paveldzunovich.rental.ifaces.IFilter;
+import by.gsu.paveldzunovich.rental.factories.DaoFactory;
+import by.gsu.paveldzunovich.rental.factories.WindowFactory;
 import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
 import by.gsu.paveldzunovich.rental.ifaces.IItemHolder;
 import by.gsu.paveldzunovich.rental.ifaces.IUiStrings;
-import by.gsu.paveldzunovich.rental.impl.filters.FirmFilter;
-import by.gsu.paveldzunovich.rental.impl.filters.ItemTypeFilter;
+import by.gsu.paveldzunovich.rental.impl.filterfields.selectionfilterfields.FirmFilterField;
+import by.gsu.paveldzunovich.rental.impl.filterfields.selectionfilterfields.ItemTypeFilterField;
 import by.gsu.paveldzunovich.rental.impl.firm.FirmDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.itemtypes.ItemTypeDaoImplDb;
+import by.gsu.paveldzunovich.rental.impl.rental.RentalUiStrings;
 import by.gsu.paveldzunovich.rental.model.Firm;
 import by.gsu.paveldzunovich.rental.model.ItemType;
+import by.gsu.paveldzunovich.rental.model.Rental;
 import by.gsu.paveldzunovich.rental.model.RentalItem;
+import by.gsu.paveldzunovich.rental.ui.ItemDialog;
 import by.gsu.paveldzunovich.rental.ui.filter.FilterItemFrame;
 import by.gsu.paveldzunovich.rental.ui.filter.FilterItemList;
 import by.gsu.paveldzunovich.rental.ui.util.UiErrorHandler;
+import by.gsu.paveldzunovich.rental.ui.util.WindowBuilder;
 
 public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 
@@ -49,66 +53,81 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 				getItemDao()));
 	}
 
-	protected JComponent getFilterPanel() {
-		try {
-			JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	protected Component getAdditionalButtonPanel() {
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
-			filterPanel.add(new JLabel("Фильтр по типу предмета:"));
+		JButton showRentalsButton = new JButton("Показать прокаты");
+		showRentalsButton.addActionListener(new ActionListener() {
 
-			itemTypeFilter = new JComboBox<ItemType>();
-			IItemDao<ItemType> itemTypeDao = new ItemTypeDaoImplDb();
-			itemTypeFilter.addItem(new ItemType());
-			for (ItemType itemType : itemTypeDao.getItems()) {
-				itemTypeFilter.addItem(itemType);
-			}
-
-			itemTypeFilter.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					try {
-						filterRentalItems();
-					} catch (UiException ex) {
-						UiErrorHandler.handleError(ex.getMessage());
-					}
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					RentalItemFrame rentalItemFrame = WindowFactory
+							.getRentalItemFrame();
+					rentalItemFrame.getRentalItemFilter().setSelectedItem(
+							getItemHolder().getSelectedItem());
+					rentalItemFrame.setVisible(true);
+				} catch (UiException e) {
+					UiErrorHandler.handleError(e.getMessage());
 				}
-
-			});
-
-			filterPanel.add(itemTypeFilter);
-
-			filterPanel.add(new JLabel("Фильтр по производителю:"));
-
-			firmFilter = new JComboBox<Firm>();
-			IItemDao<Firm> firmDao = new FirmDaoImplDb();
-			firmFilter.addItem(new Firm());
-			for (Firm firm : firmDao.getItems()) {
-				firmFilter.addItem(firm);
 			}
+		});
 
-			firmFilter.addActionListener(new ActionListener() {
+		panel.add(showRentalsButton);
 
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					try {
-						filterRentalItems();
-					} catch (UiException ex) {
-						UiErrorHandler.handleError(ex.getMessage());
+		JButton doRental = new JButton("Оформить прокат");
+		doRental.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					Rental rental = new Rental();
+					rental.setBeginDate(new Date(new java.util.Date().getTime()));
+					rental.setEndDate(new Date(new java.util.Date().getTime()));
+					rental.setRentalItem(getItemHolder().getSelectedItem());
+					IItemDao<Rental> rentalDao = DaoFactory.getRentalDao();
+					ItemDialog<Rental> itemDialog = WindowBuilder.build(new ItemDialog<Rental>(
+							RentalItemItemFrame.this, new RentalUiStrings()
+									.getAddItemHeader(), rentalDao
+									.getItemTableRepresentation(rental)));
+
+					rental = itemDialog.getItem();
+					if (rental != null) {
+						rentalDao.addItem(rental);
 					}
+				} catch (DaoException | UiException e) {
+					UiErrorHandler.handleError(e.getMessage());
 				}
-
-			});
-
-			filterPanel.add(firmFilter);
-
-			return filterPanel;
-		} catch (DaoException e) {
-			UiErrorHandler.handleError("Ошибка создания фильтра. "
-					+ e.getMessage());
-			return new JPanel();
-		}
+			}
+		});
+		panel.add(doRental);
+		return panel;
 	}
-	
+
+	protected JPanel getFilterPanel() {
+		JPanel panel = super.getFilterPanel();
+		panel.removeAll();
+
+		try {
+			ItemTypeFilterField itemTypeFilterField = new ItemTypeFilterField(
+					"Фильтр по типу предмета:", new ItemTypeDaoImplDb(),
+					getFilterActionListener());
+			itemTypeFilter = itemTypeFilterField;
+
+			FirmFilterField firmFilterField = new FirmFilterField(
+					"Фильтр по производителю:", new FirmDaoImplDb(),
+					getFilterActionListener());
+			firmFilter = firmFilterField;
+
+			addFilter(itemTypeFilterField);
+			addFilter(firmFilterField);
+		} catch (DaoException e) {
+			UiErrorHandler.handleError(e.getMessage());
+		}
+
+		return panel;
+	}
+
 	protected void clearFilters() {
 		itemTypeFilter.setSelectedIndex(0);
 		firmFilter.setSelectedIndex(0);
@@ -120,17 +139,6 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 
 	public JComboBox<Firm> getFirmFilter() {
 		return firmFilter;
-	}
-
-	protected void filterRentalItems() throws UiException {
-		List<IFilter<RentalItem>> filters = new ArrayList<IFilter<RentalItem>>();
-		if (itemTypeFilter.getSelectedIndex() != 0) {
-			filters.add(new ItemTypeFilter((ItemType) itemTypeFilter.getSelectedItem()));
-		}
-		if (firmFilter.getSelectedIndex() != 0) {
-			filters.add(new FirmFilter((Firm) firmFilter.getSelectedItem()));
-		}
-		filter(filters);
 	}
 
 }

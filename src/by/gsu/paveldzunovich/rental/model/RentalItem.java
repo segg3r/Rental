@@ -75,7 +75,10 @@ public class RentalItem {
 	}
 	
 	public String toString() {
-		return "(¹" + inventoryNumber + ") " + itemType + " " + firm;
+		if (id != 0)
+			return "(¹" + inventoryNumber + ") " + itemType + " " + firm;
+		else 
+			return "";
 	}
 	
 	public boolean equals(Object obj) {

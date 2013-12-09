@@ -7,13 +7,10 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import by.gsu.paveldzunovich.rental.exceptions.DaoException;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
-import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
 import by.gsu.paveldzunovich.rental.impl.itemfields.SelectionItemField;
 import by.gsu.paveldzunovich.rental.impl.itemfields.TextItemField;
-import by.gsu.paveldzunovich.rental.impl.job.JobUiStrings;
 import by.gsu.paveldzunovich.rental.model.Employee;
 import by.gsu.paveldzunovich.rental.model.Job;
 
@@ -25,12 +22,10 @@ public class EmployeeTableRepresentation extends
 	private AbstractItemField<String> phone;
 	private AbstractItemField<String> address;
 
-	public EmployeeTableRepresentation(Employee item, IItemDao<Job> jobDao)
-			throws DaoException {
+	public EmployeeTableRepresentation(Employee item){
 		super(item);
 
-		this.job = new SelectionItemField<Job>("Должность", jobDao,
-				new JobUiStrings(), item.getJob(), (item.getId() == 0 && item
+		this.job = new SelectionItemField<Job>("Должность", item.getJob(), (item.getId() == 0 && item
 						.getJob().getId() != 0));
 		this.name = new TextItemField("ФИО", item.getName());
 		this.phone = new TextItemField("Телефон", item.getPhone());

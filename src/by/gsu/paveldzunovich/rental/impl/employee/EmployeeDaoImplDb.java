@@ -21,8 +21,8 @@ public class EmployeeDaoImplDb extends AbstractDaoImplDb<Employee> {
 
 	@Override
 	public AbstractTableRepresentation<Employee> getItemTableRepresentation(
-			Employee item) throws DaoException {
-		return new EmployeeTableRepresentation(item, jobDao);
+			Employee item) {
+		return new EmployeeTableRepresentation(item);
 	}
 
 	@Override

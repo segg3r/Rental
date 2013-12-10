@@ -43,7 +43,7 @@ public class ItemType {
 	}
 	
 	public String toString() {
-		return name;
+		return id == 0 ? "" : name;
 	}
 
 }

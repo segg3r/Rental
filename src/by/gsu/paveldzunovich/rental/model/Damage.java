@@ -43,7 +43,7 @@ public class Damage {
 	}
 	
 	public String toString() {
-		return description;
+		return id == 0 ? "" : description;
 	}
 	
 	public boolean equals(Object obj) {

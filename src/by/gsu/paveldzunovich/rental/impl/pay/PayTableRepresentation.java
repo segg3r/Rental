@@ -9,6 +9,7 @@ import by.gsu.paveldzunovich.rental.impl.itemfields.TextItemField;
 import by.gsu.paveldzunovich.rental.model.Pay;
 import by.gsu.paveldzunovich.rental.model.PayType;
 import by.gsu.paveldzunovich.rental.model.Rental;
+import by.gsu.paveldzunovich.rental.ui.util.UiErrorHandler;
 
 public class PayTableRepresentation extends AbstractTableRepresentation<Pay> {
 
@@ -34,12 +35,25 @@ public class PayTableRepresentation extends AbstractTableRepresentation<Pay> {
 	}
 
 	@Override
-	public void setItemFields() {
-		Pay item = getItem();
-		item.setAmount(Integer.valueOf(amount.getValue()));
-		item.setDate(date.getValue());
-		item.setRental(rental.getValue());
-		item.setPayType(payType.getValue());
+	public boolean setItemFields() {
+		try {
+			int am = Integer.valueOf(amount.getValue());
+			if (am <= 0) throw new NumberFormatException();
+			
+			if (date.getValue() == null) throw new IllegalArgumentException();
+			Pay item = getItem();
+			item.setAmount(am);
+			item.setDate(date.getValue());
+			item.setRental(rental.getValue());
+			item.setPayType(payType.getValue());
+			return true;
+		} catch (NumberFormatException e) {
+			UiErrorHandler.handleError("—умма оплаты должна быть числом большим нул€");
+			return false;
+		} catch (IllegalArgumentException e) {
+			UiErrorHandler.handleError("¬ведите верную дату");
+			return false;
+		}
 	}
 
 }

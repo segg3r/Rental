@@ -29,10 +29,11 @@ public class ClientTableRepresentation extends AbstractTableRepresentation<Clien
 	}
 
 	@Override
-	public void setItemFields() {
+	public boolean setItemFields() {
 		Client item = getItem();
 		item.setName(name.getValue());
 		item.setPhone(phone.getValue());
+		return true;
 	}
 	
 	public JPanel getListComponent() {

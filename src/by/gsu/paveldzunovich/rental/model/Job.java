@@ -52,7 +52,7 @@ public class Job {
 	}
 	
 	public String toString() {
-		return name;
+		return id == 0 ? "" : name;
 	}
 
 }

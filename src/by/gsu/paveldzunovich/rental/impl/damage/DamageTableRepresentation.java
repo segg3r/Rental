@@ -27,10 +27,11 @@ public class DamageTableRepresentation extends
 	}
 
 	@Override
-	public void setItemFields() {
+	public boolean setItemFields() {
 		Damage item = getItem();
 		item.setRentalItem(rentalItem.getValue());
 		item.setDescription(description.getValue());
+		return true;
 	}
 
 }

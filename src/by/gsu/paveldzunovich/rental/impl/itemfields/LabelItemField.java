@@ -7,7 +7,7 @@ import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField;
 
 public class LabelItemField extends AbstractItemField<String> {
 	
-	JLabel label;
+	private JLabel label;
 
 	public LabelItemField(String name, String value, Visibility visibility, String postfix) {
 		super(name, visibility, postfix);
@@ -35,6 +35,10 @@ public class LabelItemField extends AbstractItemField<String> {
 	@Override
 	public JComponent getComponent() {
 		return label;
+	}
+	
+	public void setValue(String s) {
+		label.setText(s + " " + getPostfix());
 	}
 
 }

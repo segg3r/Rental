@@ -16,7 +16,7 @@ public abstract class AbstractTableRepresentation<T> {
 	private T item;
 	
 	public abstract AbstractItemField<?>[] getFields();
-	public abstract void setItemFields();
+	public abstract boolean setItemFields();
 	
 	public AbstractTableRepresentation(T item) {
 		super();

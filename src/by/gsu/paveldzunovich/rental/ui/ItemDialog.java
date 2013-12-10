@@ -91,9 +91,10 @@ public class ItemDialog<T> extends JDialog implements IItemWindow {
 	}
 
 	private void okAction() {
-		itemTableRepresentation.setItemFields();
-		item = itemTableRepresentation.getItem();
-		closeDialog();
+		if (itemTableRepresentation.setItemFields()) {
+			item = itemTableRepresentation.getItem();
+			closeDialog();
+		}	
 	}
 
 	private void cancelAction() {

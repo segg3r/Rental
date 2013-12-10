@@ -17,10 +17,11 @@ public class FirmTableRepresentation extends AbstractTableRepresentation<Firm> {
 	}
 
 	@Override
-	public void setItemFields() {
+	public boolean setItemFields() {
 		Firm item = getItem();
 		item.setName(name.getValue());
 		item.setAddress(address.getValue());
+		return true;
 	}
 
 	@Override

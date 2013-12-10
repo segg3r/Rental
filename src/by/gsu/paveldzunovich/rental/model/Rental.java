@@ -17,6 +17,8 @@ public class Rental {
 		this.rentalItem = new RentalItem();
 		this.employee = new Employee();
 		this.client = new Client();
+		this.beginDate = new Date(new java.util.Date().getTime());
+		this.endDate = new Date(new java.util.Date().getTime());
 	}
 
 	public Rental(int id, RentalItem rentalItem, Employee employee,

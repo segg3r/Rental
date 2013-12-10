@@ -4,6 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Calendar;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -18,6 +23,7 @@ import by.gsu.paveldzunovich.rental.model.Client;
 import by.gsu.paveldzunovich.rental.model.Employee;
 import by.gsu.paveldzunovich.rental.model.Rental;
 import by.gsu.paveldzunovich.rental.model.RentalItem;
+import by.gsu.paveldzunovich.rental.ui.util.UiErrorHandler;
 
 public class RentalTableRepresentation extends
 		AbstractTableRepresentation<Rental> {
@@ -45,7 +51,40 @@ public class RentalTableRepresentation extends
 		this.endDate = new CalendarItemField("Дата возврата",
 				Visibility.VISIBLE, item.getEndDate());
 		this.totalCost = new LabelItemField("Стоимость", String.valueOf(item
-				.getTotalCost()), Visibility.TABLE_ONLY, "");
+				.getTotalCost()), Visibility.TABLE_ONLY, "руб.");
+
+		rentalItem.addListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				rentalItem.selectItem();
+				recalculateTotalCost();
+			}
+		});
+
+		PropertyChangeListener pcl = new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				recalculateTotalCost();
+			}
+		};
+		beginDate.addListener(pcl);
+		endDate.addListener(pcl);
+
+		recalculateTotalCost();
+	}
+
+	private void recalculateTotalCost() {
+		int cost = rentalItem.getValue().getDailyCost();
+		Calendar c = Calendar.getInstance();
+		c.setTime(beginDate.getValue());
+		int firstDay = c.get(Calendar.DAY_OF_YEAR);
+		c.setTime(endDate.getValue());
+		int secondDay = c.get(Calendar.DAY_OF_YEAR);
+		int days = secondDay - firstDay;
+
+		totalCost.setValue(String.valueOf(cost * days));
 	}
 
 	@Override
@@ -55,13 +94,24 @@ public class RentalTableRepresentation extends
 	}
 
 	@Override
-	public void setItemFields() {
-		Rental item = getItem();
-		item.setClient(client.getValue());
-		item.setBeginDate(beginDate.getValue());
-		item.setEmployee(employee.getValue());
-		item.setEndDate(endDate.getValue());
-		item.setRentalItem(rentalItem.getValue());
+	public boolean setItemFields() {
+		try {
+			if (beginDate.getValue() == null || endDate.getValue() == null)
+				throw new IllegalArgumentException("Введите валидные даты");
+			if (beginDate.getValue().after(endDate.getValue()))
+				throw new IllegalArgumentException(
+						"Дата начала проката позже даты конца проката");
+			Rental item = getItem();
+			item.setClient(client.getValue());
+			item.setBeginDate(beginDate.getValue());
+			item.setEmployee(employee.getValue());
+			item.setEndDate(endDate.getValue());
+			item.setRentalItem(rentalItem.getValue());
+			return true;
+		} catch (IllegalArgumentException e) {
+			UiErrorHandler.handleError(e.getMessage());
+			return false;
+		}
 	}
 
 	public JPanel getListComponent() {

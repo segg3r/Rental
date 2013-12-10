@@ -10,6 +10,7 @@ import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
 import by.gsu.paveldzunovich.rental.model.Pay;
 import by.gsu.paveldzunovich.rental.model.PayType;
 import by.gsu.paveldzunovich.rental.model.Rental;
+import by.gsu.paveldzunovich.rental.util.DateUtil;
 
 public class PayDaoImplDb extends AbstractDaoImplDb<Pay> {
 
@@ -68,14 +69,19 @@ public class PayDaoImplDb extends AbstractDaoImplDb<Pay> {
 				+ item.getPayType().getId()
 				+ ", "
 				+ item.getRental().getId()
-				+ ", " + item.getAmount() + ",'" + item.getDate() + "')";
+				+ ", "
+				+ item.getAmount()
+				+ ",'"
+				+ DateUtil.format(item.getDate()) + "')";
 	}
 
 	@Override
 	public String getUpdateQuery(Pay item) {
-		return "update Прокат set idСпособаОплаты = " + item.getPayType().getId() +
-				", idПроката = " + item.getRental().getId() + 
-				", Сумма = " + item.getAmount() + ", Дата='" + item.getDate() + "' where id = " + item.getId();
+		return "update Прокат set idСпособаОплаты = "
+				+ item.getPayType().getId() + ", idПроката = "
+				+ item.getRental().getId() + ", Сумма = " + item.getAmount()
+				+ ", Дата='" + DateUtil.format(item.getDate())
+				+ "' where id = " + item.getId();
 	}
 
 	@Override

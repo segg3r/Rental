@@ -21,9 +21,10 @@ public class ItemTypeTableRepresentation extends
 	}
 
 	@Override
-	public void setItemFields() {
+	public boolean setItemFields() {
 		ItemType item = getItem();
 		item.setName(name.getValue());
+		return true;
 	}
 
 

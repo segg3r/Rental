@@ -21,14 +21,24 @@ public class SelectionItemField<T> extends AbstractItemField<T> {
 	private T item;
 	private JLabel label;
 
+	private JButton button;
+
+	private ActionListener actionListener;
+
 	public SelectionItemField(String name, T activeItem, Visibility visibility,
 			boolean readOnly) {
 		super(name, visibility);
-		this.item = activeItem;
 		this.readOnly = readOnly;
-
 		this.label = new JLabel();
-		setLabelText(item.toString());
+		this.button = new JButton("Выбрать");
+		this.actionListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectItem();
+			}
+		};
+		setItem(activeItem);
 	}
 
 	public SelectionItemField(String name, T activeItem, boolean readOnly) {
@@ -52,32 +62,37 @@ public class SelectionItemField<T> extends AbstractItemField<T> {
 	@Override
 	public JComponent getComponent() {
 		JPanel panel = new JPanel(new BorderLayout(5, 5));
-		JButton button = new JButton("Выбрать");
 		button.setEnabled(!readOnly);
 		panel.add(label, BorderLayout.CENTER);
 		panel.add(button, BorderLayout.EAST);
 
-		button.addActionListener(new ActionListener() {
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Class<?> cl = item.getClass();
-				ItemFrame<T> itemFrame = (ItemFrame<T>) WindowFactory
-						.getFrameByClass(cl);
-				T retItem = new SelectDialog<T>(itemFrame).getItem();
-				if (retItem != null) {
-					item = retItem;
-					setLabelText(item.toString());
-				}
-			}
-		});
+		button.addActionListener(actionListener);
 
 		return panel;
 	}
 
+	public void addListener(ActionListener al) {
+		actionListener = al;
+	}
+
+	@SuppressWarnings("unchecked")
+	public void selectItem() {
+		Class<?> cl = item.getClass();
+		ItemFrame<T> itemFrame = (ItemFrame<T>) WindowFactory
+				.getFrameByClass(cl);
+		T retItem = new SelectDialog<T>(itemFrame).getItem();
+		setItem(retItem);
+	}
+
+	public void setItem(T retItem) {
+		if (retItem != null) {
+			item = retItem;
+			setLabelText(item.toString());
+		}
+	}
+
 	protected void setLabelText(String string) {
-		label.setText((string.equals("") ? "-" : string));		
+		label.setText((string.equals("") ? "-" : string));
 	}
 
 }

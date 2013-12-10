@@ -12,6 +12,7 @@ import by.gsu.paveldzunovich.rental.model.Employee;
 import by.gsu.paveldzunovich.rental.model.Job;
 import by.gsu.paveldzunovich.rental.model.Rental;
 import by.gsu.paveldzunovich.rental.model.RentalItem;
+import by.gsu.paveldzunovich.rental.util.DateUtil;
 
 public class RentalDaoImplDb extends AbstractDaoImplDb<Rental> {
 
@@ -90,18 +91,23 @@ public class RentalDaoImplDb extends AbstractDaoImplDb<Rental> {
 				+ ","
 				+ item.getEmployee().getId()
 				+ ",'"
-				+ item.getBeginDate()
-				+ "', '" + item.getEndDate() + "'," + item.getTotalCost() + ")";
+				+ DateUtil.format(item.getBeginDate())
+				+ "', '"
+				+ DateUtil.format(item.getEndDate())
+				+ "',"
+				+ item.getTotalCost() + ")";
 	}
 
 	@Override
 	public String getUpdateQuery(Rental item) {
+		System.out.println(DateUtil.format(item.getEndDate()));
 		return "update Прокат set idВещи = " + item.getRentalItem().getId()
 				+ ", idКлиента = " + item.getClient().getId()
 				+ ", idРаботника = " + item.getEmployee().getId()
-				+ ", ДатаВыдачи = '" + item.getBeginDate()
-				+ "', ДатаВозврата = '" + item.getEndDate() + "', Стоимость = "
-				+ item.getTotalCost() + " where id = " + item.getId();
+				+ ", ДатаВыдачи = '" + DateUtil.format(item.getBeginDate())
+				+ "', ДатаВозврата = '" + DateUtil.format(item.getEndDate())
+				+ "', Стоимость = " + item.getTotalCost() + " where id = "
+				+ item.getId();
 	}
 
 	@Override

@@ -38,12 +38,13 @@ public class EmployeeTableRepresentation extends
 	}
 
 	@Override
-	public void setItemFields() {
+	public boolean setItemFields() {
 		Employee item = getItem();
 		item.setAddress(address.getValue());
 		item.setPhone(phone.getValue());
 		item.setName(name.getValue());
 		item.setJob(job.getValue());
+		return true;
 	}
 
 	public JPanel getListComponent() {

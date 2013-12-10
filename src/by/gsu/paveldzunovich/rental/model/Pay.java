@@ -14,6 +14,7 @@ public class Pay {
 		super();
 		this.payType = new PayType();
 		this.rental = new Rental();
+		this.date = new Date(new java.util.Date().getTime());
 	}
 
 	public Pay(int id, PayType payType, Rental rental, int amount, Date date) {
@@ -64,11 +65,13 @@ public class Pay {
 	public void setDate(Date date) {
 		this.date = date;
 	}
-	
+
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!(obj instanceof Pay)) return false;
-		
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Pay))
+			return false;
+
 		Pay pay = (Pay) obj;
 		return id == pay.id;
 	}

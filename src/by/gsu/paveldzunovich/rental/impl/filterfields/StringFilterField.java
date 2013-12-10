@@ -13,7 +13,7 @@ public class StringFilterField<T> extends JTextField implements IFilterField<T> 
 
 	private static final long serialVersionUID = 1L;
 	private String name;
-	
+
 	public StringFilterField(String name, DocumentListener dl) {
 		super("", 20);
 		this.name = name;

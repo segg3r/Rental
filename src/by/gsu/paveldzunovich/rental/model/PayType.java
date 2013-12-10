@@ -40,15 +40,17 @@ public class PayType {
 	public void setCommision(double commision) {
 		this.commision = commision;
 	}
-	
+
 	public String toString() {
 		return id == 0 ? "" : name;
-	}	
-	
+	}
+
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!(obj instanceof PayType)) return false;
-		
+		if (this == obj)
+			return true;
+		if (!(obj instanceof PayType))
+			return false;
+
 		PayType payType = (PayType) obj;
 		return id == payType.id;
 	}

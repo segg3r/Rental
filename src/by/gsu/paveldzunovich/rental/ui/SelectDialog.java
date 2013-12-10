@@ -64,12 +64,12 @@ public class SelectDialog<T> extends JDialog {
 		panel.add(cancelButton);
 		return panel;
 	}
-	
+
 	public T getItem() {
 		setVisible(true);
 		return item;
 	}
-	
+
 	private void closeDialog() {
 		setVisible(false);
 		dispose();

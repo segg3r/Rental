@@ -34,8 +34,9 @@ public class FirmItemFrame extends FilterItemFrame<Firm> {
 	}
 
 	public JComponent getAdditionalButtonPanel() {
-		JPanel additionalButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		
+		JPanel additionalButtonPanel = new JPanel(new FlowLayout(
+				FlowLayout.LEFT));
+
 		JButton addItemButton = new JButton("Добавить вещь");
 		addItemButton.addActionListener(new ActionListener() {
 

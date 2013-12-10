@@ -16,14 +16,15 @@ public class EmployeeItemFrame extends FilterItemFrame<Employee> {
 			IUiStrings<Employee> uiStrings) {
 		super(itemDao, uiStrings);
 	}
-	
+
 	public void initializeFrame() {
 		super.initializeFrame();
 		setSize(800, 600);
 	}
-	
+
 	public IItemHolder<Employee> createItemHolder() throws DaoException {
-		return super.createItemHolder(new FilterItemList<Employee>(getItemDao()));
+		return super
+				.createItemHolder(new FilterItemList<Employee>(getItemDao()));
 	}
 
 }

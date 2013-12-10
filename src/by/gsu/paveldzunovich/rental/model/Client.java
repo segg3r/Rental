@@ -40,11 +40,11 @@ public class Client {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
-	
+
 	public String toString() {
 		return id == 0 ? "" : name;
 	}
-	
+
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;

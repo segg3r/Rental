@@ -62,7 +62,7 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 
 		outer.add(getMainButtonPanel(), BorderLayout.EAST);
 		outer.add(getAdditionalButtonPanel(), BorderLayout.CENTER);
-		
+
 		return outer;
 	}
 
@@ -86,7 +86,7 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 				try {
 					itemDao.deleteItem(itemHolder.getSelectedItem());
 					itemHolder.reset();
-					
+
 					scrollPane.revalidate();
 					checkButtonState();
 				} catch (UiException | DaoException e) {
@@ -125,7 +125,7 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 					if (item != null) {
 						itemDao.addItem(item);
 						itemHolder.reset();
-						
+
 						scrollPane.revalidate();
 						checkButtonState();
 					}
@@ -156,7 +156,7 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 
 		return scrollPane;
 	}
-	
+
 	public JScrollPane getScrollPane() {
 		return scrollPane;
 	}

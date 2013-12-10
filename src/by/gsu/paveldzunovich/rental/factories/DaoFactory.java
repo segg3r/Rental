@@ -23,15 +23,15 @@ public class DaoFactory {
 	public static IItemDao<ItemType> getItemTypeDao() {
 		return new ItemTypeDaoImplDb();
 	}
-	
+
 	public static IItemDao<Firm> getFirmDao() {
 		return new FirmDaoImplDb();
 	}
-	
+
 	public static IItemDao<RentalItem> getRentalItemDao() {
 		return new RentalItemDaoImplDb(getFirmDao(), getItemTypeDao());
 	}
-	
+
 	public static IItemDao<Client> getClientDao() {
 		return new ClientDaoImplDb();
 	}

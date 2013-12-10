@@ -50,7 +50,8 @@ public class PayTypeDaoImplDb extends AbstractDaoImplDb<PayType> {
 	@Override
 	public String getUpdateQuery(PayType item) {
 		return "update СпособОплаты set Описание = '" + item.getName()
-				+ "', Комиссия = " + item.getCommision() + " where id = " + item.getId();
+				+ "', Комиссия = " + item.getCommision() + " where id = "
+				+ item.getId();
 	}
 
 	@Override

@@ -41,11 +41,11 @@ public class Damage {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 	public String toString() {
 		return id == 0 ? "" : description;
 	}
-	
+
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;

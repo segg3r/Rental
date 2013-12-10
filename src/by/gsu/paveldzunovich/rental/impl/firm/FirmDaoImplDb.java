@@ -15,7 +15,8 @@ public class FirmDaoImplDb extends AbstractDaoImplDb<Firm> {
 	}
 
 	@Override
-	public AbstractTableRepresentation<Firm> getItemTableRepresentation(Firm item) {
+	public AbstractTableRepresentation<Firm> getItemTableRepresentation(
+			Firm item) {
 		return new FirmTableRepresentation(item);
 	}
 
@@ -42,21 +43,20 @@ public class FirmDaoImplDb extends AbstractDaoImplDb<Firm> {
 
 	@Override
 	public String getInsertQuery(Firm item) {
-		return "insert into ФирмаПроизводитель(Название, Адрес) values('" + item.getName() + "','" + item.getAddress() + "')";
+		return "insert into ФирмаПроизводитель(Название, Адрес) values('"
+				+ item.getName() + "','" + item.getAddress() + "')";
 	}
 
 	@Override
 	public String getUpdateQuery(Firm item) {
-		return "update ФирмаПроизводитель set Название = '" 
-				+ item.getName() + "', Адрес = '" + item.getAddress() + "' where id = " + item.getId();
+		return "update ФирмаПроизводитель set Название = '" + item.getName()
+				+ "', Адрес = '" + item.getAddress() + "' where id = "
+				+ item.getId();
 	}
 
 	@Override
 	public String getDeleteQuery(Firm item) {
 		return "delete from ФирмаПроизводитель where id = " + item.getId();
 	}
-
-
-
 
 }

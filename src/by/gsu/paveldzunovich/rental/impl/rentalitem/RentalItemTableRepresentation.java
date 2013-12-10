@@ -8,6 +8,7 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import by.gsu.paveldzunovich.rental.exceptions.ItemFieldException;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField.Visibility;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
@@ -50,12 +51,31 @@ public class RentalItemTableRepresentation extends
 	}
 
 	@Override
-	public void setItemFields() {
+	public void setItemFields() throws ItemFieldException {
 		RentalItem item = getItem();
+		try {
+			int cost = Integer.valueOf(dailyCost.getValue());
+			if (cost <= 0)
+				throw new NumberFormatException();
+			item.setDailyCost(cost);
+		} catch (NumberFormatException e) {
+			throw new ItemFieldException(dailyCost, "Введите верную стоимость");
+		}
+
+		try {
+			int num = Integer.valueOf(inventoryNumber.getValue());
+			item.setInventoryNumber(num);
+		} catch (NumberFormatException e) {
+			throw new ItemFieldException(inventoryNumber,
+					"Введите верный инвентарный номер");
+		}
+
+		if (firm.getValue().getId() == 0)
+			throw new ItemFieldException(firm, "Выберите фирму");
+		if (itemType.getValue().getId() == 0)
+			throw new ItemFieldException(itemType, "Выберите тип предмета");
 		item.setFirm(firm.getValue());
 		item.setItemType(itemType.getValue());
-		item.setDailyCost(Integer.valueOf(dailyCost.getValue()));
-		item.setInventoryNumber(Integer.valueOf(inventoryNumber.getValue()));
 	}
 
 	public JPanel getListComponent() {

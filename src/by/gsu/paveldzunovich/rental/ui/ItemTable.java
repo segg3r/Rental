@@ -20,7 +20,7 @@ public class ItemTable<T> extends ItemHolderComponent<T> {
 
 	public ItemTable(IItemDao<T> itemDao) throws DaoException {
 		super(itemDao);
-		
+
 		this.table = new JTable() {
 			private static final long serialVersionUID = 1L;
 
@@ -34,7 +34,7 @@ public class ItemTable<T> extends ItemHolderComponent<T> {
 				.getTableHeader());
 		table.setModel(model);
 	}
-	
+
 	public JTable getTable() {
 		return table;
 	}

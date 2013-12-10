@@ -1,6 +1,5 @@
 package by.gsu.paveldzunovich.rental.model;
 
-
 public class ItemType {
 
 	private int id;
@@ -41,7 +40,7 @@ public class ItemType {
 		ItemType itemType = (ItemType) obj;
 		return id == itemType.id;
 	}
-	
+
 	public String toString() {
 		return id == 0 ? "" : name;
 	}

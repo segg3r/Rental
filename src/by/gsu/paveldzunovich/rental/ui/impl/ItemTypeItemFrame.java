@@ -29,15 +29,15 @@ public class ItemTypeItemFrame extends FilterItemFrame<ItemType> {
 
 	private static final long serialVersionUID = 1L;
 
-
 	public ItemTypeItemFrame(IItemDao<ItemType> itemDao,
 			IUiStrings<ItemType> uiStrings) {
 		super(itemDao, uiStrings);
 	}
-	
+
 	public JComponent getAdditionalButtonPanel() {
-		JPanel additionalButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		
+		JPanel additionalButtonPanel = new JPanel(new FlowLayout(
+				FlowLayout.LEFT));
+
 		JButton addItemButton = new JButton("Добавить вещь");
 		addItemButton.addActionListener(new ActionListener() {
 
@@ -46,18 +46,17 @@ public class ItemTypeItemFrame extends FilterItemFrame<ItemType> {
 				try {
 					RentalItem item = new RentalItem();
 					item.setItemType(getItemHolder().getSelectedItem());
-					
+
 					IItemDao<RentalItem> itemDao = new RentalItemDaoImplDb(
-							new FirmDaoImplDb(),
-							new ItemTypeDaoImplDb());
+							new FirmDaoImplDb(), new ItemTypeDaoImplDb());
 
 					item = WindowBuilder.build(
 							new ItemDialog<RentalItem>(ItemTypeItemFrame.this,
 									new RentalItemUiStrings()
-											.getChangeItemHeader(),
-											itemDao.getItemTableRepresentation(item)))
+											.getChangeItemHeader(), itemDao
+											.getItemTableRepresentation(item)))
 							.getItem();
-					
+
 					if (item != null) {
 						itemDao.addItem(item);
 					}
@@ -66,7 +65,7 @@ public class ItemTypeItemFrame extends FilterItemFrame<ItemType> {
 				}
 			}
 		});
-		
+
 		JButton showItemsButton = new JButton("Показать вещи");
 		showItemsButton.addActionListener(new ActionListener() {
 
@@ -76,8 +75,10 @@ public class ItemTypeItemFrame extends FilterItemFrame<ItemType> {
 					IItemHolder<ItemType> itemTable = getItemHolder();
 					ItemType item = itemTable.getSelectedItem();
 
-					RentalItemItemFrame rentalItemItemFrame = WindowFactory.getRentalItemItemFrame();
-					rentalItemItemFrame.getItemTypeFilter().setSelectedItem(item);
+					RentalItemItemFrame rentalItemItemFrame = WindowFactory
+							.getRentalItemItemFrame();
+					rentalItemItemFrame.getItemTypeFilter().setSelectedItem(
+							item);
 					rentalItemItemFrame.setVisible(true);
 
 				} catch (UiException e) {
@@ -88,8 +89,8 @@ public class ItemTypeItemFrame extends FilterItemFrame<ItemType> {
 		});
 		additionalButtonPanel.add(addItemButton);
 		additionalButtonPanel.add(showItemsButton);
-		
+
 		return additionalButtonPanel;
-	}	
-	
+	}
+
 }

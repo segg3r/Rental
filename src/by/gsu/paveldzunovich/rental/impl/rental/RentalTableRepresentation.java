@@ -4,15 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Calendar;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import by.gsu.paveldzunovich.rental.exceptions.ItemFieldException;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField.Visibility;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
@@ -23,7 +20,6 @@ import by.gsu.paveldzunovich.rental.model.Client;
 import by.gsu.paveldzunovich.rental.model.Employee;
 import by.gsu.paveldzunovich.rental.model.Rental;
 import by.gsu.paveldzunovich.rental.model.RentalItem;
-import by.gsu.paveldzunovich.rental.ui.util.UiErrorHandler;
 
 public class RentalTableRepresentation extends
 		AbstractTableRepresentation<Rental> {
@@ -53,25 +49,6 @@ public class RentalTableRepresentation extends
 		this.totalCost = new LabelItemField("Стоимость", String.valueOf(item
 				.getTotalCost()), Visibility.TABLE_ONLY, "руб.");
 
-		rentalItem.addListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				rentalItem.selectItem();
-				recalculateTotalCost();
-			}
-		});
-
-		PropertyChangeListener pcl = new PropertyChangeListener() {
-
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				recalculateTotalCost();
-			}
-		};
-		beginDate.addListener(pcl);
-		endDate.addListener(pcl);
-
 		recalculateTotalCost();
 	}
 
@@ -94,24 +71,30 @@ public class RentalTableRepresentation extends
 	}
 
 	@Override
-	public boolean setItemFields() {
-		try {
-			if (beginDate.getValue() == null || endDate.getValue() == null)
-				throw new IllegalArgumentException("Введите валидные даты");
-			if (beginDate.getValue().after(endDate.getValue()))
-				throw new IllegalArgumentException(
-						"Дата начала проката позже даты конца проката");
-			Rental item = getItem();
-			item.setClient(client.getValue());
-			item.setBeginDate(beginDate.getValue());
-			item.setEmployee(employee.getValue());
-			item.setEndDate(endDate.getValue());
-			item.setRentalItem(rentalItem.getValue());
-			return true;
-		} catch (IllegalArgumentException e) {
-			UiErrorHandler.handleError(e.getMessage());
-			return false;
-		}
+	public void setItemFields() throws ItemFieldException {
+
+		if (beginDate.getValue() == null)
+			throw new ItemFieldException(beginDate,
+					"Выберите верную дату начала проката");
+		if (endDate.getValue() == null)
+			throw new ItemFieldException(endDate,
+					"Выберите верную дату завершения проката");
+		if (beginDate.getValue().after(endDate.getValue()))
+			throw new ItemFieldException(beginDate,
+					"Дата начала проката позже даты конца проката");
+		if (client.getValue().getId() == 0)
+			throw new ItemFieldException(client, "Выберите клиента");
+		if (employee.getValue().getId() == 0)
+			throw new ItemFieldException(employee, "Выберите работника");
+		if (rentalItem.getValue().getId() == 0)
+			throw new ItemFieldException(rentalItem, "Выберите предмет проката");
+		Rental item = getItem();
+		item.setClient(client.getValue());
+		item.setBeginDate(beginDate.getValue());
+		item.setEmployee(employee.getValue());
+		item.setEndDate(endDate.getValue());
+		item.setRentalItem(rentalItem.getValue());
+		recalculateTotalCost();
 	}
 
 	public JPanel getListComponent() {

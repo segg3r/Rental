@@ -43,14 +43,16 @@ public class JobDaoImplDb extends AbstractDaoImplDb<Job> {
 
 	@Override
 	public String getInsertQuery(Job item) {
-		return "insert into Должность(Название, Зарплата) values ('" + item.getName() + "', " + item.getSalary() + ")";
+		return "insert into Должность(Название, Зарплата) values ('"
+				+ item.getName() + "', " + item.getSalary() + ")";
 	}
 
 	@Override
 	public String getUpdateQuery(Job item) {
-		return "update Должность set Название = '" + item.getName() + "', Зарплата = " + item.getSalary() 
-				+ " where id = " + item.getId();
-	} 
+		return "update Должность set Название = '" + item.getName()
+				+ "', Зарплата = " + item.getSalary() + " where id = "
+				+ item.getId();
+	}
 
 	@Override
 	public String getDeleteQuery(Job item) {

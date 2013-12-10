@@ -14,9 +14,9 @@ public interface IItemHolder<T> {
 	boolean isEmpty();
 
 	List<T> getItems();
-	
+
 	Component getComponent();
-	
+
 	IItemDao<T> getItemDao();
 
 }

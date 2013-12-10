@@ -88,15 +88,18 @@ public class Rental {
 	public void setTotalCost(int totalCost) {
 		this.totalCost = totalCost;
 	}
-	
+
 	public String toString() {
-		return id == 0 ? "" : "(№" + id + ") Клиент: " +  client + " Предмет: " + rentalItem;
+		return id == 0 ? "" : "(№" + id + ") Клиент: " + client + " Предмет: "
+				+ rentalItem;
 	}
-	
+
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!(obj instanceof Rental)) return false;
-		
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Rental))
+			return false;
+
 		Rental rental = (Rental) obj;
 		return id == rental.id;
 	}

@@ -40,7 +40,7 @@ public class Job {
 	public void setSalary(int salary) {
 		this.salary = salary;
 	}
-	
+
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -50,7 +50,7 @@ public class Job {
 		Job job = (Job) obj;
 		return id == job.id;
 	}
-	
+
 	public String toString() {
 		return id == 0 ? "" : name;
 	}

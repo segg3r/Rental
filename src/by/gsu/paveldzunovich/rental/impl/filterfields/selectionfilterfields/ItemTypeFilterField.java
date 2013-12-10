@@ -10,12 +10,13 @@ import by.gsu.paveldzunovich.rental.impl.filters.ItemTypeFilter;
 import by.gsu.paveldzunovich.rental.model.ItemType;
 import by.gsu.paveldzunovich.rental.model.RentalItem;
 
-public class ItemTypeFilterField extends SelectionFilterField<RentalItem, ItemType> {
+public class ItemTypeFilterField extends
+		SelectionFilterField<RentalItem, ItemType> {
 
 	private static final long serialVersionUID = 1L;
 
-	public ItemTypeFilterField(String name, IItemDao<ItemType> itemDao, ActionListener al)
-			throws DaoException {
+	public ItemTypeFilterField(String name, IItemDao<ItemType> itemDao,
+			ActionListener al) throws DaoException {
 		super(name, itemDao, al);
 	}
 
@@ -24,5 +25,4 @@ public class ItemTypeFilterField extends SelectionFilterField<RentalItem, ItemTy
 		return new ItemTypeFilter((ItemType) getSelectedItem());
 	}
 
-	
 }

@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import by.gsu.paveldzunovich.rental.exceptions.ItemFieldException;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
 import by.gsu.paveldzunovich.rental.impl.itemfields.SelectionItemField;
@@ -22,11 +23,11 @@ public class EmployeeTableRepresentation extends
 	private AbstractItemField<String> phone;
 	private AbstractItemField<String> address;
 
-	public EmployeeTableRepresentation(Employee item){
+	public EmployeeTableRepresentation(Employee item) {
 		super(item);
 
-		this.job = new SelectionItemField<Job>("Должность", item.getJob(), (item.getId() == 0 && item
-						.getJob().getId() != 0));
+		this.job = new SelectionItemField<Job>("Должность", item.getJob(),
+				(item.getId() == 0 && item.getJob().getId() != 0));
 		this.name = new TextItemField("ФИО", item.getName());
 		this.phone = new TextItemField("Телефон", item.getPhone());
 		this.address = new TextItemField("Адрес", item.getAddress());
@@ -38,13 +39,18 @@ public class EmployeeTableRepresentation extends
 	}
 
 	@Override
-	public boolean setItemFields() {
+	public void setItemFields() throws ItemFieldException {
+		if (address.getValue().equals(""))
+			throw new ItemFieldException(address, "Введите адрес");
+		if (name.getValue().equals(""))
+			throw new ItemFieldException(name, "Введите имя");
+		if (job.getValue().getId() == 0)
+			throw new ItemFieldException(job, "Выберите должность");
 		Employee item = getItem();
 		item.setAddress(address.getValue());
 		item.setPhone(phone.getValue());
 		item.setName(name.getValue());
 		item.setJob(job.getValue());
-		return true;
 	}
 
 	public JPanel getListComponent() {
@@ -65,17 +71,20 @@ public class EmployeeTableRepresentation extends
 		dataPanel.add(new JLabel(address.getName() + ": "), BorderLayout.WEST);
 		dataPanel.add(new JLabel(address.getStringValue()), BorderLayout.WEST);
 
-		/*JLabel totalEarningsLabel = new JLabel(totalEarnings.getName() + ": "
-				+ totalEarnings.getStringValue());
-		Font totalEarningsFont = new Font("Serif", Font.PLAIN, 17);
-		totalEarningsLabel.setFont(totalEarningsFont);
-
-		JPanel totalEarningsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		totalEarningsPanel.add(totalEarningsLabel);*/
+		/*
+		 * JLabel totalEarningsLabel = new JLabel(totalEarnings.getName() + ": "
+		 * + totalEarnings.getStringValue()); Font totalEarningsFont = new
+		 * Font("Serif", Font.PLAIN, 17);
+		 * totalEarningsLabel.setFont(totalEarningsFont);
+		 * 
+		 * JPanel totalEarningsPanel = new JPanel(new
+		 * FlowLayout(FlowLayout.LEFT));
+		 * totalEarningsPanel.add(totalEarningsLabel);
+		 */
 
 		panel.add(titlePanel, BorderLayout.NORTH);
 		panel.add(dataPanel, BorderLayout.CENTER);
-		//panel.add(totalEarningsPanel);
+		// panel.add(totalEarningsPanel);
 
 		panel.setBackground(panel.getBackground());
 		return panel;

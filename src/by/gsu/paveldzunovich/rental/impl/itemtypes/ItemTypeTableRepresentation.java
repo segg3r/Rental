@@ -1,5 +1,6 @@
 package by.gsu.paveldzunovich.rental.impl.itemtypes;
 
+import by.gsu.paveldzunovich.rental.exceptions.ItemFieldException;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
 import by.gsu.paveldzunovich.rental.impl.itemfields.TextItemField;
@@ -21,11 +22,11 @@ public class ItemTypeTableRepresentation extends
 	}
 
 	@Override
-	public boolean setItemFields() {
+	public void setItemFields() throws ItemFieldException {
+		if (name.getValue().equals(""))
+			throw new ItemFieldException(name, "Введите название типа предмета");
 		ItemType item = getItem();
 		item.setName(name.getValue());
-		return true;
 	}
-
 
 }

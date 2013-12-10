@@ -8,11 +8,11 @@ import by.gsu.paveldzunovich.rental.ifaces.IFilter;
 public class StringFilter<T> implements IFilter<T> {
 
 	private String filter;
-	
+
 	public StringFilter(String filter) {
 		this.filter = filter;
 	}
-	
+
 	@Override
 	public List<T> filter(List<T> items) {
 		List<T> result = new ArrayList<T>();

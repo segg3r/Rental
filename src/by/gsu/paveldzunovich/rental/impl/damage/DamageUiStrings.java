@@ -20,6 +20,4 @@ public class DamageUiStrings implements IUiStrings<Damage> {
 		return "Повреждения";
 	}
 
-	
-	
 }

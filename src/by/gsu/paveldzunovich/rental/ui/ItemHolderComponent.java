@@ -8,7 +8,7 @@ import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
 import by.gsu.paveldzunovich.rental.ifaces.IItemHolder;
 
 public abstract class ItemHolderComponent<T> implements IItemHolder<T> {
-	
+
 	private IItemDao<T> itemDao;
 	private List<T> items;
 
@@ -16,7 +16,7 @@ public abstract class ItemHolderComponent<T> implements IItemHolder<T> {
 		super();
 		this.itemDao = itemDao;
 	}
-	
+
 	public void reset() throws UiException {
 		resetData();
 		resetModel(items);
@@ -41,7 +41,7 @@ public abstract class ItemHolderComponent<T> implements IItemHolder<T> {
 	public List<T> getItems() {
 		return items;
 	}
-	
+
 	public IItemDao<T> getItemDao() {
 		return itemDao;
 	}

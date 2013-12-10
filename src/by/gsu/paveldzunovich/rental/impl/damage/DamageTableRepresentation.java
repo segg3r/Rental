@@ -1,5 +1,6 @@
 package by.gsu.paveldzunovich.rental.impl.damage;
 
+import by.gsu.paveldzunovich.rental.exceptions.ItemFieldException;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
 import by.gsu.paveldzunovich.rental.impl.itemfields.SelectionItemField;
@@ -27,11 +28,12 @@ public class DamageTableRepresentation extends
 	}
 
 	@Override
-	public boolean setItemFields() {
+	public void setItemFields() throws ItemFieldException {
+		if (rentalItem.getValue().getId() == 0)
+			throw new ItemFieldException(rentalItem, "Выберите предмет проката");
 		Damage item = getItem();
 		item.setRentalItem(rentalItem.getValue());
 		item.setDescription(description.getValue());
-		return true;
 	}
 
 }

@@ -34,7 +34,7 @@ public class CalendarItemField extends AbstractItemField<Date> {
 	public JComponent getComponent() {
 		return calendar;
 	}
-	
+
 	public void addListener(PropertyChangeListener pcl) {
 		calendar.addPropertyChangeListener(pcl);
 	}

@@ -15,7 +15,7 @@ public class RentalItemFilter implements IFilter<Rental> {
 		super();
 		this.rentalItem = rentalItem;
 	}
-	
+
 	@Override
 	public List<Rental> filter(List<Rental> items) {
 		List<Rental> result = new ArrayList<Rental>();

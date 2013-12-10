@@ -65,8 +65,8 @@ public class ClientItemFrame extends FilterItemFrame<Client> {
 
 					item = WindowBuilder.build(
 							new ItemDialog<Rental>(ClientItemFrame.this,
-									new RentalUiStrings().getAddItemHeader(), itemDao
-											.getItemTableRepresentation(item)))
+									new RentalUiStrings().getAddItemHeader(),
+									itemDao.getItemTableRepresentation(item)))
 							.getItem();
 
 					if (item != null) {

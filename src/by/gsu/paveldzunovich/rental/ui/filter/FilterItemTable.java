@@ -12,7 +12,7 @@ import by.gsu.paveldzunovich.rental.ui.ItemTable;
 public class FilterItemTable<T> extends FilterItemHolderComponent<T> {
 
 	private ItemTable<T> itemTable;
-	
+
 	public FilterItemTable(IItemDao<T> itemDao) throws DaoException {
 		super(itemDao);
 		this.itemTable = new ItemTable<>(itemDao);

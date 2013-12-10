@@ -1,30 +1,19 @@
-import java.awt.BorderLayout;
-
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
+import static net.sf.dynamicreports.report.builder.DynamicReports.*;
+import by.gsu.paveldzunovich.rental.exceptions.DaoException;
 import by.gsu.paveldzunovich.rental.factories.DaoFactory;
-import by.gsu.paveldzunovich.rental.impl.clients.ClientUiStrings;
-import by.gsu.paveldzunovich.rental.ui.impl.ClientItemFrame;
-import by.gsu.paveldzunovich.rental.ui.util.WindowBuilder;
-
+import net.sf.dynamicreports.report.exception.DRException;
 
 public class TestRunner {
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
-		JDialog dialog = new JDialog();
-		JFrame frame2 = WindowBuilder.build(new ClientItemFrame(DaoFactory.getClientDao(), new ClientUiStrings()));
-		
-		JPanel panel = (JPanel) frame2.getContentPane();
-		dialog.setContentPane(panel);
-		dialog.setSize(frame2.getSize());
-		
-		panel.add(new JPanel(), BorderLayout.SOUTH);
-		dialog.setVisible(true);
+		try {
+			report().columns(col.column("Phone", "phone", type.stringType()),
+					col.column("Name", "name", type.stringType()))
+					.setDataSource(DaoFactory.getClientDao().getItems()).show();
+		} catch (DRException | DaoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

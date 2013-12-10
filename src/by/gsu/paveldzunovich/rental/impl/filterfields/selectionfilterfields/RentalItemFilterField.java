@@ -10,7 +10,8 @@ import by.gsu.paveldzunovich.rental.impl.filters.RentalItemFilter;
 import by.gsu.paveldzunovich.rental.model.Rental;
 import by.gsu.paveldzunovich.rental.model.RentalItem;
 
-public class RentalItemFilterField extends SelectionFilterField<Rental, RentalItem> {
+public class RentalItemFilterField extends
+		SelectionFilterField<Rental, RentalItem> {
 
 	private static final long serialVersionUID = 1L;
 

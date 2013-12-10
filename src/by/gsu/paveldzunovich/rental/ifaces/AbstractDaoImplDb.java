@@ -13,13 +13,20 @@ import by.gsu.paveldzunovich.rental.exceptions.DaoException;
 public abstract class AbstractDaoImplDb<T> implements IItemDao<T> {
 
 	public abstract String getIdQuery();
-	public abstract T getItemFromIdQuery(int id, ResultSet rs) throws SQLException;
+
+	public abstract T getItemFromIdQuery(int id, ResultSet rs)
+			throws SQLException;
+
 	public abstract String getListQuery();
+
 	public abstract T getItemFromListQuery(ResultSet rs) throws SQLException;
+
 	public abstract String getInsertQuery(T item);
+
 	public abstract String getUpdateQuery(T item);
+
 	public abstract String getDeleteQuery(T item);
-	
+
 	@Override
 	public T getItemById(int id) throws DaoException {
 		try {
@@ -29,7 +36,7 @@ public abstract class AbstractDaoImplDb<T> implements IItemDao<T> {
 
 			try {
 				cn = DbConnection.getConnection();
-				
+
 				st = cn.prepareStatement(getIdQuery());
 				st.setInt(1, id);
 
@@ -37,7 +44,7 @@ public abstract class AbstractDaoImplDb<T> implements IItemDao<T> {
 				if (!rs.next()) {
 					throw new SQLException();
 				}
-				
+
 				return getItemFromIdQuery(id, rs);
 			} finally {
 				DbConnection.closeResultSets(rs);
@@ -45,7 +52,8 @@ public abstract class AbstractDaoImplDb<T> implements IItemDao<T> {
 				DbConnection.closeConnection(cn);
 			}
 		} catch (SQLException e) {
-			throw new DaoException("Ошибка чтения сущности. " + e.getMessage() , e);
+			throw new DaoException("Ошибка чтения сущности. " + e.getMessage(),
+					e);
 		}
 	}
 
@@ -58,16 +66,16 @@ public abstract class AbstractDaoImplDb<T> implements IItemDao<T> {
 
 			try {
 				cn = DbConnection.getConnection();
-				
+
 				st = cn.prepareStatement(getListQuery());
-				
+
 				List<T> items = new ArrayList<T>();
 				rs = st.executeQuery();
-				
+
 				while (rs.next()) {
 					items.add(getItemFromListQuery(rs));
 				}
-				
+
 				return items;
 
 			} finally {
@@ -76,7 +84,8 @@ public abstract class AbstractDaoImplDb<T> implements IItemDao<T> {
 				DbConnection.closeConnection(cn);
 			}
 		} catch (SQLException e) {
-			throw new DaoException("Ошибка чтения списка сущностей. " + e.getMessage(), e);
+			throw new DaoException("Ошибка чтения списка сущностей. "
+					+ e.getMessage(), e);
 		}
 	}
 
@@ -89,9 +98,9 @@ public abstract class AbstractDaoImplDb<T> implements IItemDao<T> {
 
 			try {
 				cn = DbConnection.getConnection();
-				
+
 				st = cn.prepareStatement(getInsertQuery(item));
-				
+
 				st.executeUpdate();
 
 			} finally {
@@ -100,7 +109,8 @@ public abstract class AbstractDaoImplDb<T> implements IItemDao<T> {
 				DbConnection.closeConnection(cn);
 			}
 		} catch (SQLException e) {
-			throw new DaoException("Ошибка добавления сущности. " + e.getMessage(), e);
+			throw new DaoException("Ошибка добавления сущности. "
+					+ e.getMessage(), e);
 		}
 	}
 
@@ -112,7 +122,7 @@ public abstract class AbstractDaoImplDb<T> implements IItemDao<T> {
 
 			try {
 				cn = DbConnection.getConnection();
-				
+
 				st = cn.prepareStatement(getUpdateQuery(item));
 				st.executeUpdate();
 			} finally {
@@ -121,7 +131,8 @@ public abstract class AbstractDaoImplDb<T> implements IItemDao<T> {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new DaoException("Ошибка изменения сущности. " + e.getMessage(), e);
+			throw new DaoException("Ошибка изменения сущности. "
+					+ e.getMessage(), e);
 		}
 	}
 
@@ -133,9 +144,9 @@ public abstract class AbstractDaoImplDb<T> implements IItemDao<T> {
 
 			try {
 				cn = DbConnection.getConnection();
-				
+
 				st = cn.prepareStatement(getDeleteQuery(item));
-				
+
 				st.execute();
 
 			} finally {

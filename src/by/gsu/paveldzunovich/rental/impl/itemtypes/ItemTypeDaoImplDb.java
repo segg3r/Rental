@@ -44,12 +44,14 @@ public class ItemTypeDaoImplDb extends AbstractDaoImplDb<ItemType> {
 
 	@Override
 	public String getInsertQuery(ItemType item) {
-		return "insert into ТипПредмета(Название) values('" + item.getName() + "')";
+		return "insert into ТипПредмета(Название) values('" + item.getName()
+				+ "')";
 	}
 
 	@Override
 	public String getUpdateQuery(ItemType item) {
-		return "update ТипПредмета set Название = '" + item.getName() + "'";
+		return "update ТипПредмета set Название = '" + item.getName() + "'"
+				+ " where id = " + item.getId();
 	}
 
 	@Override

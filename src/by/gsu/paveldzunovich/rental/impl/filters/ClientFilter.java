@@ -15,7 +15,7 @@ public class ClientFilter implements IFilter<Rental> {
 		super();
 		this.client = client;
 	}
-	
+
 	@Override
 	public List<Rental> filter(List<Rental> items) {
 		List<Rental> result = new ArrayList<Rental>();

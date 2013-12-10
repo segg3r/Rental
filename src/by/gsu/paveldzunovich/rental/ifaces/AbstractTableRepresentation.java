@@ -9,20 +9,22 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import by.gsu.paveldzunovich.rental.exceptions.ItemFieldException;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField.Visibility;
 
 public abstract class AbstractTableRepresentation<T> {
 
 	private T item;
-	
+
 	public abstract AbstractItemField<?>[] getFields();
-	public abstract boolean setItemFields();
-	
+
+	public abstract void setItemFields() throws ItemFieldException;
+
 	public AbstractTableRepresentation(T item) {
 		super();
 		this.item = item;
 	}
-	
+
 	private List<AbstractItemField<?>> getTableFieldsOnly() {
 		List<AbstractItemField<?>> tableFields = new ArrayList<AbstractItemField<?>>();
 		for (AbstractItemField<?> itemField : getFields()) {
@@ -32,7 +34,7 @@ public abstract class AbstractTableRepresentation<T> {
 		}
 		return tableFields;
 	}
-	
+
 	public String[] getTableHeader() {
 		List<AbstractItemField<?>> tableFields = getTableFieldsOnly();
 		String[] result = new String[tableFields.size()];
@@ -41,7 +43,7 @@ public abstract class AbstractTableRepresentation<T> {
 		}
 		return result;
 	}
-	
+
 	public String[] getTableStringFields() {
 		List<AbstractItemField<?>> tableFields = getTableFieldsOnly();
 		String[] result = new String[tableFields.size()];
@@ -50,11 +52,11 @@ public abstract class AbstractTableRepresentation<T> {
 		}
 		return result;
 	}
-	
+
 	public T getItem() {
 		return item;
 	}
-	
+
 	public Component getChangableComponent() {
 		JPanel inner = new JPanel();
 		inner.setLayout(new GridLayout(0, 2, 7, 7));
@@ -70,14 +72,14 @@ public abstract class AbstractTableRepresentation<T> {
 				inner.add(component);
 			}
 		}
-		
+
 		return inner;
 	}
-	
+
 	public JPanel getListComponent() {
 		return null;
 	}
-	
+
 	public int getFieldCount(Visibility excluding) {
 		int count = 0;
 		for (AbstractItemField<?> field : getFields()) {
@@ -85,7 +87,7 @@ public abstract class AbstractTableRepresentation<T> {
 				count++;
 			}
 		}
-		
+
 		return count;
 	}
 }

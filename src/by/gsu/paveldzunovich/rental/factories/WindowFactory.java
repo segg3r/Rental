@@ -92,7 +92,6 @@ public class WindowFactory {
 
 	@SuppressWarnings("unchecked")
 	public static <T> ItemFrame<T> getFrameByClass(Class<T> cl) {
-		System.out.println(cl);
 		if (cl.equals(Pay.class))
 			return (ItemFrame<T>) getPayItemFrame();
 		else if (cl.equals(Rental.class))

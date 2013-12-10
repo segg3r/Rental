@@ -73,18 +73,20 @@ public class RentalItem {
 	public void setTotalEarnings(int totalEarnings) {
 		this.totalEarnings = totalEarnings;
 	}
-	
+
 	public String toString() {
 		if (id != 0)
 			return "(¹" + inventoryNumber + ") " + itemType + " " + firm;
-		else 
+		else
 			return "";
 	}
-	
+
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!(obj instanceof RentalItem)) return false;
-		
+		if (this == obj)
+			return true;
+		if (!(obj instanceof RentalItem))
+			return false;
+
 		RentalItem rentalItem = (RentalItem) obj;
 		return id == rentalItem.id;
 	}

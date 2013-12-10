@@ -19,10 +19,10 @@ public class ItemList<T> extends ItemHolderComponent<T> {
 	private JPanel panel;
 	private List<AbstractTableRepresentation<T>> itemRepList;
 	private List<JSelectablePanel> panels;
-	
+
 	public ItemList(IItemDao<T> itemDao) {
 		super(itemDao);
-		
+
 		this.panel = new JPanel();
 		panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		panel.setLayout(new GridLayout(0, 2, 10, 10));
@@ -47,24 +47,25 @@ public class ItemList<T> extends ItemHolderComponent<T> {
 	public void resetModel(List<T> items) throws UiException {
 		try {
 			panel.removeAll();
-			
+
 			IItemDao<T> itemDao = getItemDao();
 			itemRepList = new ArrayList<AbstractTableRepresentation<T>>();
 			panels = new ArrayList<JSelectablePanel>();
 			for (T item : items) {
 				JSelectablePanel outer = new JSelectablePanel();
 				outer.setBorder(BorderFactory.createEtchedBorder());
-				
-				AbstractTableRepresentation<T> tableRep = itemDao.getItemTableRepresentation(item);
+
+				AbstractTableRepresentation<T> tableRep = itemDao
+						.getItemTableRepresentation(item);
 				JPanel selectablePanel = tableRep.getListComponent();
-				
+
 				itemRepList.add(tableRep);
 				outer.add(selectablePanel);
-				
+
 				panels.add(outer);
 				panel.add(outer);
 			}
-			
+
 			for (JSelectablePanel selectablePanel : panels) {
 				selectablePanel.setPanelList(panels);
 			}

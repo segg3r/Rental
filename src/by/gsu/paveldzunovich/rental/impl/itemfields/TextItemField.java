@@ -6,17 +6,19 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentListener;
 
 import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField;
 
 public class TextItemField extends AbstractItemField<String> {
-	
+
 	private JTextField textField;
 	private JComponent component;
-	
-	public TextItemField(String name, String value, Visibility visibility, String postfix) {
+
+	public TextItemField(String name, String value, Visibility visibility,
+			String postfix) {
 		super(name, visibility, postfix);
-		
+
 		textField = new JTextField(value);
 		if (postfix.equals("")) {
 			component = textField;
@@ -25,7 +27,7 @@ public class TextItemField extends AbstractItemField<String> {
 			panel.setLayout(new BorderLayout(5, 5));
 			panel.add(textField, BorderLayout.CENTER);
 			panel.add(new JLabel(postfix), BorderLayout.EAST);
-			
+
 			component = panel;
 		}
 	}
@@ -33,11 +35,11 @@ public class TextItemField extends AbstractItemField<String> {
 	public TextItemField(String name, String value, String postfix) {
 		this(name, value, Visibility.VISIBLE, postfix);
 	}
-	
+
 	public TextItemField(String name, String value) {
 		this(name, value, "");
 	}
-	
+
 	@Override
 	public JComponent getComponent() {
 		return component;
@@ -51,6 +53,10 @@ public class TextItemField extends AbstractItemField<String> {
 	@Override
 	public String getStringValue() {
 		return getValue();
+	}
+
+	public void addListener(DocumentListener dl) {
+		textField.getDocument().addDocumentListener(dl);
 	}
 
 }

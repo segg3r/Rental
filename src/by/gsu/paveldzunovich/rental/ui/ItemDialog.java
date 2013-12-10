@@ -12,9 +12,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import by.gsu.paveldzunovich.rental.exceptions.ItemFieldException;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
 import by.gsu.paveldzunovich.rental.ifaces.IItemWindow;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField.Visibility;
+import by.gsu.paveldzunovich.rental.ui.util.UiErrorHandler;
 
 public class ItemDialog<T> extends JDialog implements IItemWindow {
 
@@ -91,10 +93,14 @@ public class ItemDialog<T> extends JDialog implements IItemWindow {
 	}
 
 	private void okAction() {
-		if (itemTableRepresentation.setItemFields()) {
+		try {
+			itemTableRepresentation.setItemFields();
 			item = itemTableRepresentation.getItem();
 			closeDialog();
-		}	
+		} catch (ItemFieldException e) {
+			UiErrorHandler.handleError(e.getMessage());
+		}
+
 	}
 
 	private void cancelAction() {

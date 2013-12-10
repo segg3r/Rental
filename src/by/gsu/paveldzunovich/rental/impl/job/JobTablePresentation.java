@@ -1,10 +1,10 @@
 package by.gsu.paveldzunovich.rental.impl.job;
 
+import by.gsu.paveldzunovich.rental.exceptions.ItemFieldException;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
 import by.gsu.paveldzunovich.rental.impl.itemfields.TextItemField;
 import by.gsu.paveldzunovich.rental.model.Job;
-import by.gsu.paveldzunovich.rental.ui.util.UiErrorHandler;
 
 public class JobTablePresentation extends AbstractTableRepresentation<Job> {
 
@@ -24,17 +24,16 @@ public class JobTablePresentation extends AbstractTableRepresentation<Job> {
 	}
 
 	@Override
-	public boolean setItemFields() {
+	public void setItemFields() throws ItemFieldException {
 		try {
 			int sal = Integer.valueOf(salary.getStringValue());
-			if (sal <= 0) throw new NumberFormatException();
+			if (sal <= 0)
+				throw new NumberFormatException();
 			Job item = getItem();
 			item.setName(name.getStringValue());
 			item.setSalary(sal);
-			return true;
 		} catch (NumberFormatException e) {
-			UiErrorHandler.handleError("Зарплата должна быть числом большим нуля");
-			return false;
-		}	
+			throw new ItemFieldException(salary, "Введите верную зарплату");
+		}
 	}
 }

@@ -42,7 +42,7 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 		JPanel filterOuter = new JPanel(new BorderLayout(5, 5));
 		filterOuter.add(getFilterPanel(), BorderLayout.CENTER);
 		filterOuter.setBorder(new EmptyBorder(5, 5, 5, 5));
-		
+
 		JButton clearFilters = new JButton("Очистить фильтры");
 		clearFilters.addActionListener(new ActionListener() {
 
@@ -50,9 +50,9 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 			public void actionPerformed(ActionEvent ev) {
 				clearFilters();
 			}
-		
+
 		});
-		
+
 		filterOuter.add(clearFilters, BorderLayout.EAST);
 		return filterOuter;
 	}
@@ -62,7 +62,7 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 			filterField.clearFilter();
 		}
 	}
-	
+
 	protected ActionListener getFilterActionListener() {
 		return new ActionListener() {
 
@@ -70,7 +70,7 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 			public void actionPerformed(ActionEvent e) {
 				filter();
 			}
-			
+
 		};
 	}
 
@@ -100,7 +100,7 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 			FilterItemHolderComponent<T> filterItemComponent) {
 		this.filterItemComponent = filterItemComponent;
 	}
-	
+
 	public FilterItemHolderComponent<T> getFilterItemHolderComponent() {
 		return filterItemComponent;
 	}
@@ -124,7 +124,7 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 			}
 		};
 	}
-	
+
 	protected void filter() {
 		List<IFilter<T>> filters = new ArrayList<IFilter<T>>();
 		for (IFilterField<T> filterField : filterFields) {

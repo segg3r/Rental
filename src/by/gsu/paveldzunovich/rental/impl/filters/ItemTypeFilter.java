@@ -15,7 +15,7 @@ public class ItemTypeFilter implements IFilter<RentalItem> {
 		super();
 		this.itemType = itemType;
 	}
-	
+
 	@Override
 	public List<RentalItem> filter(List<RentalItem> items) {
 		List<RentalItem> result = new ArrayList<RentalItem>();

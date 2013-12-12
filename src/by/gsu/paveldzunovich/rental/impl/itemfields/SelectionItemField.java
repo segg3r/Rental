@@ -41,6 +41,10 @@ public class SelectionItemField<T> extends AbstractItemField<T> {
 		setItem(activeItem);
 	}
 
+	public JButton getButton() {
+		return button;
+	}
+
 	public SelectionItemField(String name, T activeItem, boolean readOnly) {
 		this(name, activeItem, Visibility.VISIBLE, readOnly);
 	}

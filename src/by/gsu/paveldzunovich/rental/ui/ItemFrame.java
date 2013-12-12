@@ -88,6 +88,7 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 					itemHolder.reset();
 
 					scrollPane.revalidate();
+					scrollPane.repaint();
 					checkButtonState();
 				} catch (UiException | DaoException e) {
 					UiErrorHandler.handleError(e.getMessage());
@@ -107,6 +108,7 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 						itemHolder.reset();
 
 						scrollPane.revalidate();
+						scrollPane.repaint();
 						checkButtonState();
 					}
 				} catch (UiException | DaoException e) {
@@ -127,6 +129,7 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 						itemHolder.reset();
 
 						scrollPane.revalidate();
+						scrollPane.repaint();
 						checkButtonState();
 					}
 				} catch (UiException | DaoException e) {

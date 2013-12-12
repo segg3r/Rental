@@ -19,6 +19,7 @@ import by.gsu.paveldzunovich.rental.impl.pay.PayUiStrings;
 import by.gsu.paveldzunovich.rental.impl.rental.RentalUiStrings;
 import by.gsu.paveldzunovich.rental.model.Pay;
 import by.gsu.paveldzunovich.rental.model.Rental;
+import by.gsu.paveldzunovich.rental.ui.reportframe.RentalReportOptionFrame;
 import by.gsu.paveldzunovich.rental.ui.util.UiErrorHandler;
 import by.gsu.paveldzunovich.rental.ui.util.WindowBuilder;
 
@@ -181,6 +182,19 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnNewMenu.add(mntmNewMenuItem_7);
+
+		JMenu reportMenu = new JMenu("Отчеты");
+		menuBar.add(reportMenu);
+
+		JMenuItem rentalsReportMenuItem = new JMenuItem("Прокаты за сегодня");
+		reportMenu.add(rentalsReportMenuItem);
+		rentalsReportMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				new RentalReportOptionFrame().setVisible(true);
+			}
+		});
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

@@ -1,6 +1,5 @@
 package by.gsu.paveldzunovich.rental.ui.impl;
 
-import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import by.gsu.paveldzunovich.rental.exceptions.DaoException;
@@ -10,9 +9,7 @@ import by.gsu.paveldzunovich.rental.ifaces.IItemHolder;
 import by.gsu.paveldzunovich.rental.ifaces.IUiStrings;
 import by.gsu.paveldzunovich.rental.impl.filterfields.selectionfilterfields.ClientFilterField;
 import by.gsu.paveldzunovich.rental.impl.filterfields.selectionfilterfields.RentalItemFilterField;
-import by.gsu.paveldzunovich.rental.model.Client;
 import by.gsu.paveldzunovich.rental.model.Rental;
-import by.gsu.paveldzunovich.rental.model.RentalItem;
 import by.gsu.paveldzunovich.rental.ui.filter.FilterItemFrame;
 import by.gsu.paveldzunovich.rental.ui.filter.FilterItemList;
 import by.gsu.paveldzunovich.rental.ui.util.UiErrorHandler;
@@ -20,8 +17,8 @@ import by.gsu.paveldzunovich.rental.ui.util.UiErrorHandler;
 public class RentalItemFrame extends FilterItemFrame<Rental> {
 
 	private static final long serialVersionUID = 1L;
-	private JComboBox<Client> clientFilter;
-	private JComboBox<RentalItem> rentalItemFilter;
+	private ClientFilterField clientFilter;
+	private RentalItemFilterField rentalItemFilter;
 
 	public RentalItemFrame(IItemDao<Rental> itemDao,
 			IUiStrings<Rental> uiStrings) {
@@ -37,11 +34,11 @@ public class RentalItemFrame extends FilterItemFrame<Rental> {
 		setSize(900, 600);
 	}
 
-	public JComboBox<Client> getClientFilter() {
+	public ClientFilterField getClientFilter() {
 		return clientFilter;
 	}
 
-	public JComboBox<RentalItem> getRentalItemFilter() {
+	public RentalItemFilterField getRentalItemFilter() {
 		return rentalItemFilter;
 	}
 
@@ -52,13 +49,13 @@ public class RentalItemFrame extends FilterItemFrame<Rental> {
 		try {
 			ClientFilterField clientFilterField = new ClientFilterField(
 					"Фильтр по клиенту:", DaoFactory.getClientDao(),
-					getFilterActionListener());
+					this);
 			this.clientFilter = clientFilterField;
 			addFilter(clientFilterField);
 
 			RentalItemFilterField rentalItemFilterField = new RentalItemFilterField(
 					"Фильтр по предмету:", DaoFactory.getRentalItemDao(),
-					getFilterActionListener());
+					this);
 			this.rentalItemFilter = rentalItemFilterField;
 			addFilter(rentalItemFilterField);
 		} catch (DaoException e) {

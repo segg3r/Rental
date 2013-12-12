@@ -25,6 +25,10 @@ public class RentalItem {
 		this.inventoryNumber = inventoryNumber;
 		this.setTotalEarnings(totalEarnings);
 	}
+	
+	public String getFullName() {
+		return toString();
+	}
 
 	public int getId() {
 		return id;

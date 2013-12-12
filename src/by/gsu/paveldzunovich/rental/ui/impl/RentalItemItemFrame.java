@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.sql.Date;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import by.gsu.paveldzunovich.rental.exceptions.DaoException;
@@ -35,8 +34,8 @@ import by.gsu.paveldzunovich.rental.ui.util.WindowBuilder;
 public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 
 	private static final long serialVersionUID = 1L;
-	private JComboBox<ItemType> itemTypeFilter;
-	private JComboBox<Firm> firmFilter;
+	private ItemTypeFilterField itemTypeFilter;
+	private FirmFilterField firmFilter;
 
 	public RentalItemItemFrame(IItemDao<RentalItem> itemDao,
 			IUiStrings<RentalItem> uiStrings) {
@@ -45,7 +44,7 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 
 	public void initializeFrame() {
 		super.initializeFrame();
-		setSize(800, 600);
+		setSize(1000, 600);
 	}
 
 	public IItemHolder<RentalItem> createItemHolder() throws DaoException {
@@ -111,12 +110,12 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 		try {
 			ItemTypeFilterField itemTypeFilterField = new ItemTypeFilterField(
 					"Фильтр по типу предмета:", new ItemTypeDaoImplDb(),
-					getFilterActionListener());
+					this);
 			itemTypeFilter = itemTypeFilterField;
 
 			FirmFilterField firmFilterField = new FirmFilterField(
 					"Фильтр по производителю:", new FirmDaoImplDb(),
-					getFilterActionListener());
+					this);
 			firmFilter = firmFilterField;
 
 			addFilter(itemTypeFilterField);
@@ -129,15 +128,15 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 	}
 
 	protected void clearFilters() {
-		itemTypeFilter.setSelectedIndex(0);
-		firmFilter.setSelectedIndex(0);
+		itemTypeFilter.setSelectedItem(new ItemType());
+		firmFilter.setSelectedItem(new Firm());
 	}
 
-	public JComboBox<ItemType> getItemTypeFilter() {
+	public ItemTypeFilterField getItemTypeFilter() {
 		return itemTypeFilter;
 	}
 
-	public JComboBox<Firm> getFirmFilter() {
+	public FirmFilterField getFirmFilter() {
 		return firmFilter;
 	}
 

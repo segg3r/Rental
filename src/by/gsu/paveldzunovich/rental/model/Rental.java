@@ -32,6 +32,10 @@ public class Rental {
 		this.endDate = endDate;
 		this.totalCost = totalCost;
 	}
+	
+	public String getBeginTextDate() {
+		return beginDate.toString();
+	}
 
 	public int getId() {
 		return id;

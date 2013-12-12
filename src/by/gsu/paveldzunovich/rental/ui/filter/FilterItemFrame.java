@@ -125,7 +125,7 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 		};
 	}
 
-	protected void filter() {
+	public void filter() {
 		List<IFilter<T>> filters = new ArrayList<IFilter<T>>();
 		for (IFilterField<T> filterField : filterFields) {
 			if (filterField.doFilter()) {

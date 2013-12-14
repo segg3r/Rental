@@ -26,6 +26,10 @@ public class Pay {
 		this.date = date;
 	}
 
+	public String getTextDate() {
+		return date.toString();
+	}
+
 	public int getId() {
 		return id;
 	}

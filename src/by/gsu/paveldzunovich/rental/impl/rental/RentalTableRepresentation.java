@@ -30,6 +30,7 @@ public class RentalTableRepresentation extends
 	private CalendarItemField beginDate;
 	private CalendarItemField endDate;
 	private LabelItemField totalCost;
+	private LabelItemField leftToPay;
 
 	public RentalTableRepresentation(Rental item) {
 		super(item);
@@ -48,6 +49,9 @@ public class RentalTableRepresentation extends
 				Visibility.VISIBLE, item.getEndDate());
 		this.totalCost = new LabelItemField("Стоимость", String.valueOf(item
 				.getTotalCost()), Visibility.TABLE_ONLY, "руб.");
+		this.leftToPay = new LabelItemField("Осталось к оплате",
+				String.valueOf(item.getLeftToPay()), Visibility.TABLE_ONLY,
+				"руб.");
 
 		recalculateTotalCost();
 	}
@@ -67,7 +71,7 @@ public class RentalTableRepresentation extends
 	@Override
 	public AbstractItemField<?>[] getFields() {
 		return new AbstractItemField<?>[] { rentalItem, employee, client,
-				beginDate, endDate, totalCost };
+				beginDate, endDate, totalCost, leftToPay };
 	}
 
 	@Override
@@ -122,6 +126,10 @@ public class RentalTableRepresentation extends
 				.add(new JLabel(beginDate.getStringValue()), BorderLayout.WEST);
 		dataPanel.add(new JLabel(endDate.getName() + ": "), BorderLayout.WEST);
 		dataPanel.add(new JLabel(endDate.getStringValue()), BorderLayout.WEST);
+		dataPanel
+				.add(new JLabel(leftToPay.getName() + ": "), BorderLayout.WEST);
+		dataPanel
+				.add(new JLabel(leftToPay.getStringValue()), BorderLayout.WEST);
 
 		JLabel totalEarningsLabel = new JLabel(totalCost.getName() + ": "
 				+ totalCost.getStringValue());

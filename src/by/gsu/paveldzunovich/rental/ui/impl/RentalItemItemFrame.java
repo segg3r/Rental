@@ -5,6 +5,8 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -13,11 +15,14 @@ import by.gsu.paveldzunovich.rental.exceptions.DaoException;
 import by.gsu.paveldzunovich.rental.exceptions.UiException;
 import by.gsu.paveldzunovich.rental.factories.DaoFactory;
 import by.gsu.paveldzunovich.rental.factories.WindowFactory;
+import by.gsu.paveldzunovich.rental.ifaces.IFilter;
 import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
 import by.gsu.paveldzunovich.rental.ifaces.IItemHolder;
 import by.gsu.paveldzunovich.rental.ifaces.IUiStrings;
 import by.gsu.paveldzunovich.rental.impl.filterfields.selectionfilterfields.FirmFilterField;
 import by.gsu.paveldzunovich.rental.impl.filterfields.selectionfilterfields.ItemTypeFilterField;
+import by.gsu.paveldzunovich.rental.impl.filterfields.stringfilterfields.InventoryNumberStringFilterField;
+import by.gsu.paveldzunovich.rental.impl.filters.FirmItemTypeFilter;
 import by.gsu.paveldzunovich.rental.impl.firm.FirmDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.itemtypes.ItemTypeDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.rental.RentalUiStrings;
@@ -36,6 +41,9 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 	private static final long serialVersionUID = 1L;
 	private ItemTypeFilterField itemTypeFilter;
 	private FirmFilterField firmFilter;
+	private InventoryNumberStringFilterField inventoryNumberFilterField;
+	private ItemTypeFilterField itemTypeFilterField;
+	private FirmFilterField firmFilterField;
 
 	public RentalItemItemFrame(IItemDao<RentalItem> itemDao,
 			IUiStrings<RentalItem> uiStrings) {
@@ -55,6 +63,7 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 	protected Component getAdditionalButtonPanel() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
+		getDeleteButton().setText("Удалить с повреждениями");
 		JButton showRentalsButton = new JButton("Показать прокаты");
 		showRentalsButton.addActionListener(new ActionListener() {
 
@@ -108,18 +117,20 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 		panel.removeAll();
 
 		try {
-			ItemTypeFilterField itemTypeFilterField = new ItemTypeFilterField(
-					"Фильтр по типу предмета:", new ItemTypeDaoImplDb(),
-					this);
+			itemTypeFilterField = new ItemTypeFilterField("Предмет:",
+					new ItemTypeDaoImplDb(), this);
 			itemTypeFilter = itemTypeFilterField;
 
-			FirmFilterField firmFilterField = new FirmFilterField(
-					"Фильтр по производителю:", new FirmDaoImplDb(),
-					this);
+			firmFilterField = new FirmFilterField("Производитель:",
+					new FirmDaoImplDb(), this);
 			firmFilter = firmFilterField;
 
-			addFilter(itemTypeFilterField);
-			addFilter(firmFilterField);
+			inventoryNumberFilterField = new InventoryNumberStringFilterField(
+					"Инвентарный номер:", getFilterListener());
+
+			addFilterField(inventoryNumberFilterField);
+			addFilterField(itemTypeFilterField);
+			addFilterField(firmFilterField);
 		} catch (DaoException e) {
 			UiErrorHandler.handleError(e.getMessage());
 		}
@@ -127,7 +138,20 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 		return panel;
 	}
 
+	public void filter() {
+		synchronized (FilterItemFrame.class) {
+			List<IFilter<RentalItem>> filters = new ArrayList<IFilter<RentalItem>>();
+			filters.add(new FirmItemTypeFilter(firmFilterField
+					.getSelectedItem(), itemTypeFilterField.getSelectedItem()));
+			if (inventoryNumberFilterField.doFilter()) {
+				filters.add(inventoryNumberFilterField.getFilter());
+			}
+			filter(filters);
+		}
+	}
+
 	protected void clearFilters() {
+		inventoryNumberFilterField.clearFilter();
 		itemTypeFilter.setSelectedItem(new ItemType());
 		firmFilter.setSelectedItem(new Firm());
 	}

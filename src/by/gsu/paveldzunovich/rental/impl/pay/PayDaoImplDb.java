@@ -1,18 +1,25 @@
 package by.gsu.paveldzunovich.rental.impl.pay;
 
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import by.gsu.paveldzunovich.rental.connection.DbConnection;
 import by.gsu.paveldzunovich.rental.exceptions.DaoException;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractDaoImplDb;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
 import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
+import by.gsu.paveldzunovich.rental.ifaces.IPayDao;
 import by.gsu.paveldzunovich.rental.model.Pay;
 import by.gsu.paveldzunovich.rental.model.PayType;
 import by.gsu.paveldzunovich.rental.model.Rental;
 import by.gsu.paveldzunovich.rental.util.DateUtil;
 
-public class PayDaoImplDb extends AbstractDaoImplDb<Pay> {
+public class PayDaoImplDb extends AbstractDaoImplDb<Pay> implements IPayDao {
 
 	private IItemDao<Rental> rentalDao;
 
@@ -89,4 +96,40 @@ public class PayDaoImplDb extends AbstractDaoImplDb<Pay> {
 		return "delete from Оплата where id = " + item.getId();
 	}
 
+	@Override
+	public List<Pay> getFilteredPays(Rental rental, Date after)
+			throws DaoException {
+		try {
+			Connection cn = null;
+			PreparedStatement st = null;
+			ResultSet rs = null;
+
+			try {
+				cn = DbConnection.getConnection();
+				String rentalString = (rental.getId() == 0) ? ""
+						: "@rental_id = " + String.valueOf(rental.getId())
+								+ ", ";
+				String dateString = "@after = " + "'" + DateUtil.format(after)
+						+ "'";
+
+				String query = "exec get_pays_report " + rentalString
+						+ dateString;
+				st = cn.prepareStatement(query);
+				rs = st.executeQuery();
+
+				List<Pay> pays = new ArrayList<Pay>();
+				while (rs.next()) {
+					pays.add(getItemFromListQuery(rs));
+				}
+				return pays;
+			} finally {
+				DbConnection.closeResultSets(rs);
+				DbConnection.closeStatements(st);
+				DbConnection.closeConnection(cn);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DaoException("Ошибка получения отчета по оплатам.", e);
+		}
+	}
 }

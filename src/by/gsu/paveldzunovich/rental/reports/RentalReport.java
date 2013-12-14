@@ -2,6 +2,7 @@ package by.gsu.paveldzunovich.rental.reports;
 
 import static net.sf.dynamicreports.report.builder.DynamicReports.cht;
 import static net.sf.dynamicreports.report.builder.DynamicReports.cmp;
+import static net.sf.dynamicreports.report.builder.DynamicReports.cnd;
 import static net.sf.dynamicreports.report.builder.DynamicReports.col;
 import static net.sf.dynamicreports.report.builder.DynamicReports.report;
 import static net.sf.dynamicreports.report.builder.DynamicReports.sbt;
@@ -16,11 +17,15 @@ import java.util.List;
 import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
 import net.sf.dynamicreports.report.builder.chart.BarChartBuilder;
 import net.sf.dynamicreports.report.builder.column.TextColumnBuilder;
+import net.sf.dynamicreports.report.builder.style.ConditionalStyleBuilder;
 import net.sf.dynamicreports.report.builder.style.StyleBuilder;
 import net.sf.dynamicreports.report.constant.HorizontalAlignment;
 import by.gsu.paveldzunovich.rental.exceptions.DaoException;
 import by.gsu.paveldzunovich.rental.factories.DaoFactory;
+import by.gsu.paveldzunovich.rental.model.Client;
+import by.gsu.paveldzunovich.rental.model.Employee;
 import by.gsu.paveldzunovich.rental.model.Rental;
+import by.gsu.paveldzunovich.rental.model.RentalItem;
 
 public class RentalReport implements IReport {
 
@@ -29,22 +34,34 @@ public class RentalReport implements IReport {
 	private boolean clientNeeded;
 	private Date since;
 	private boolean chartNeeded;
+	private boolean leftToPayNeeded;
+	private Client client;
+	private Employee employee;
+	private RentalItem rentalItem;
 
 	public RentalReport(Date since, boolean clientNeeded,
-			boolean employeeNeeded, boolean rentalItemNeeded, boolean chartNeeded) {
+			boolean employeeNeeded, boolean rentalItemNeeded,
+			boolean chartNeeded, boolean leftToPayNeeded, Client client,
+			Employee employee, RentalItem rentalItem) {
 		super();
 		this.since = since;
 		this.clientNeeded = clientNeeded;
 		this.employeeNeeded = employeeNeeded;
 		this.rentalItemNeeded = rentalItemNeeded;
 		this.chartNeeded = chartNeeded;
+		this.leftToPayNeeded = leftToPayNeeded;
+		this.client = client;
+		this.employee = employee;
+		this.rentalItem = rentalItem;
 	}
 
 	@Override
 	public JasperReportBuilder getReport() {
 		try {
-			List<Rental> rentals = DaoFactory.getRentalDao().getItems();
-			List<Rental> rentalsFiltered = new SinceDateRentalFilter(since).filter(rentals);
+			List<Rental> rentalsFiltered = DaoFactory.getRentalDao()
+					.getFilteredRentals(client, employee, rentalItem);
+			rentalsFiltered = new SinceDateRentalFilter(since)
+					.filter(rentalsFiltered);
 
 			StyleBuilder boldStyle = stl.style().bold();
 			StyleBuilder boldCenteredStyle = stl.style(boldStyle)
@@ -60,6 +77,9 @@ public class RentalReport implements IReport {
 
 			TextColumnBuilder<Integer> totalCostColumn = col.column("Сумма",
 					"totalCost", new CurrencyType());
+
+			TextColumnBuilder<Integer> leftToPayColumn = col.column(
+					"Осталось к оплате", "leftToPay", type.integerType());
 
 			TextColumnBuilder<String> groupColumn = col.column("Дата",
 					"beginTextDate", type.stringType()).setStyle(
@@ -80,18 +100,30 @@ public class RentalReport implements IReport {
 			BarChartBuilder chart = cht.barChart().setTitle("Сумма по дням")
 					.setCategory(groupColumn)
 					.addSerie(cht.serie(totalCostColumn));
+			if (leftToPayNeeded)
+				chart.addSerie(cht.serie(leftToPayColumn));
 
-			
+			ConditionalStyleBuilder condition = stl.conditionalStyle(
+					cnd.equal(leftToPayColumn, 0)).setBackgroundColor(
+					Color.green);
+
 			List<TextColumnBuilder<?>> columns = new ArrayList<TextColumnBuilder<?>>();
 			columns.add(endDateColumn);
-			if (employeeNeeded) columns.add(employeeColumn);
-			if (clientNeeded) columns.add(clientColumn);
-			if (rentalItemNeeded) columns.add(rentalItemColumn);
+			if (employeeNeeded)
+				columns.add(employeeColumn);
+			if (clientNeeded)
+				columns.add(clientColumn);
+			if (rentalItemNeeded)
+				columns.add(rentalItemColumn);
 			columns.add(totalCostColumn);
-			
-			TextColumnBuilder<?>[] array = columns.toArray(new TextColumnBuilder<?>[columns.size()]);
-			
+			if (leftToPayNeeded)
+				columns.add(leftToPayColumn);
+
+			TextColumnBuilder<?>[] array = columns
+					.toArray(new TextColumnBuilder<?>[columns.size()]);
+
 			JasperReportBuilder report = report()
+					.detailRowHighlighters(condition)
 					.setColumnTitleStyle(columnTitleStyle)
 					.highlightDetailOddRows()
 					.title(cmp.text("Прокаты").setStyle(titleStyle))
@@ -102,11 +134,18 @@ public class RentalReport implements IReport {
 							sbt.sum(totalCostColumn).setStyle(summaryStyle))
 					.subtotalsAtFirstGroupFooter(
 							sbt.sum(totalCostColumn).setStyle(summaryStyle));
-			
-			if (chartNeeded) report.summary(chart);
+
+			if (leftToPayNeeded)
+				report.subtotalsAtSummary(
+						sbt.sum(leftToPayColumn).setStyle(summaryStyle))
+						.subtotalsAtFirstGroupFooter(
+								sbt.sum(leftToPayColumn).setStyle(summaryStyle));
+
+			if (chartNeeded)
+				report.summary(chart);
 			return report;
 		} catch (DaoException e) {
-			System.out.println(e);
+			e.printStackTrace();
 			return null;
 		}
 	}

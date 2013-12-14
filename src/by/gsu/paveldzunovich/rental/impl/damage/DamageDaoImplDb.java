@@ -4,9 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import by.gsu.paveldzunovich.rental.exceptions.DaoException;
-import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
-import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractDaoImplDb;
+import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
+import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
 import by.gsu.paveldzunovich.rental.impl.firm.FirmDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.itemtypes.ItemTypeDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.rentalitem.RentalItemDaoImplDb;
@@ -32,7 +32,7 @@ public class DamageDaoImplDb extends AbstractDaoImplDb<Damage> {
 
 	@Override
 	public String getIdQuery() {
-		return "select idВещи, Описание from ОписаниеПовреждений where id = ?";
+		return "select item_id, damage from damages_view where damage_id = ?";
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class DamageDaoImplDb extends AbstractDaoImplDb<Damage> {
 
 	@Override
 	public String getListQuery() {
-		return "select id, idВещи, Описание from ОписаниеПовреждений";
+		return "select damage_id, item_id, damage from damages_view";
 	}
 
 	@Override
@@ -62,21 +62,21 @@ public class DamageDaoImplDb extends AbstractDaoImplDb<Damage> {
 
 	@Override
 	public String getInsertQuery(Damage item) {
-		return "insert into ОписаниеПовреждений(idВещи, Описание) values("
+		return "insert into damages_view(item_id, damage) values("
 				+ item.getRentalItem().getId() + ", '" + item.getDescription()
 				+ "')";
 	}
 
 	@Override
 	public String getUpdateQuery(Damage item) {
-		return "update ОписаниеПовреждений set idВещи = "
-				+ item.getRentalItem().getId() + ", Описание = '"
-				+ item.getDescription() + "'";
+		return "update damages_view set item_id = "
+				+ item.getRentalItem().getId() + ", damage = '"
+				+ item.getDescription() + "' where damage_id = " + item.getId();
 	}
 
 	@Override
 	public String getDeleteQuery(Damage item) {
-		return "delete from ОписаниеПовреждений where id = " + item.getId();
+		return "delete from damages_view where damage_id = " + item.getId();
 	}
 
 }

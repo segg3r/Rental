@@ -2,6 +2,9 @@ package by.gsu.paveldzunovich.rental.model;
 
 import java.sql.Date;
 
+import by.gsu.paveldzunovich.rental.Application;
+import by.gsu.paveldzunovich.rental.util.DateUtil;
+
 public class Rental {
 
 	private int id;
@@ -11,18 +14,20 @@ public class Rental {
 	private Date beginDate;
 	private Date endDate;
 	private int totalCost;
+	private int leftToPay;
 
 	public Rental() {
 		super();
 		this.rentalItem = new RentalItem();
-		this.employee = new Employee();
+		this.employee = Application.employee;
 		this.client = new Client();
 		this.beginDate = new Date(new java.util.Date().getTime());
 		this.endDate = new Date(new java.util.Date().getTime());
 	}
 
 	public Rental(int id, RentalItem rentalItem, Employee employee,
-			Client client, Date beginDate, Date endDate, int totalCost) {
+			Client client, Date beginDate, Date endDate, int totalCost,
+			int leftToPay) {
 		super();
 		this.id = id;
 		this.rentalItem = rentalItem;
@@ -31,10 +36,19 @@ public class Rental {
 		this.beginDate = beginDate;
 		this.endDate = endDate;
 		this.totalCost = totalCost;
+		this.setLeftToPay(leftToPay);
 	}
-	
+
+	public String getRentalString() {
+		return "Прокатный билет #" + id;
+	}
+
 	public String getBeginTextDate() {
 		return beginDate.toString();
+	}
+
+	public String getEndTextDate() {
+		return DateUtil.format(endDate);
 	}
 
 	public int getId() {
@@ -94,8 +108,7 @@ public class Rental {
 	}
 
 	public String toString() {
-		return id == 0 ? "" : "(№" + id + ") Клиент: " + client + " Предмет: "
-				+ rentalItem;
+		return id == 0 ? "" : "Прокатный билет #" + id;
 	}
 
 	public boolean equals(Object obj) {
@@ -106,6 +119,14 @@ public class Rental {
 
 		Rental rental = (Rental) obj;
 		return id == rental.id;
+	}
+
+	public int getLeftToPay() {
+		return leftToPay;
+	}
+
+	public void setLeftToPay(int leftToPay) {
+		this.leftToPay = leftToPay;
 	}
 
 }

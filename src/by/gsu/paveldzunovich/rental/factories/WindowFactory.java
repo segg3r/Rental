@@ -33,6 +33,8 @@ import by.gsu.paveldzunovich.rental.ui.impl.ClientItemFrame;
 import by.gsu.paveldzunovich.rental.ui.impl.EmployeeItemFrame;
 import by.gsu.paveldzunovich.rental.ui.impl.FirmItemFrame;
 import by.gsu.paveldzunovich.rental.ui.impl.ItemTypeItemFrame;
+import by.gsu.paveldzunovich.rental.ui.impl.JobItemFrame;
+import by.gsu.paveldzunovich.rental.ui.impl.PayItemFrame;
 import by.gsu.paveldzunovich.rental.ui.impl.RentalItemFrame;
 import by.gsu.paveldzunovich.rental.ui.impl.RentalItemItemFrame;
 import by.gsu.paveldzunovich.rental.ui.util.WindowBuilder;
@@ -60,8 +62,8 @@ public class WindowFactory {
 				new PayTypeDaoImplDb(), new PayTypeUiStrings()));
 	}
 
-	public static FilterItemFrame<Job> getJobItemFrame() {
-		return WindowBuilder.build(new FilterItemFrame<Job>(new JobDaoImplDb(),
+	public static JobItemFrame getJobItemFrame() {
+		return WindowBuilder.build(new JobItemFrame(new JobDaoImplDb(),
 				new JobUiStrings()));
 	}
 
@@ -85,8 +87,8 @@ public class WindowFactory {
 				.getRentalDao(), new RentalUiStrings()));
 	}
 
-	public static ItemFrame<Pay> getPayItemFrame() {
-		return WindowBuilder.build(new ItemFrame<Pay>(DaoFactory.getPayDao(),
+	public static PayItemFrame getPayItemFrame() {
+		return WindowBuilder.build(new PayItemFrame(DaoFactory.getPayDao(),
 				new PayUiStrings()));
 	}
 

@@ -184,4 +184,8 @@ public class ItemFrame<T> extends JFrame implements IItemWindow {
 		return itemHolder;
 	}
 
+	public JButton getDeleteButton() {
+		return btnDeleteItem;
+	}
+
 }

@@ -1,16 +1,21 @@
 package by.gsu.paveldzunovich.rental.impl.employee;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import by.gsu.paveldzunovich.rental.connection.DbConnection;
 import by.gsu.paveldzunovich.rental.exceptions.DaoException;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractDaoImplDb;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
+import by.gsu.paveldzunovich.rental.ifaces.IEmployeeDao;
 import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
 import by.gsu.paveldzunovich.rental.model.Employee;
 import by.gsu.paveldzunovich.rental.model.Job;
 
-public class EmployeeDaoImplDb extends AbstractDaoImplDb<Employee> {
+public class EmployeeDaoImplDb extends AbstractDaoImplDb<Employee> implements
+		IEmployeeDao {
 
 	private IItemDao<Job> jobDao;
 
@@ -78,6 +83,36 @@ public class EmployeeDaoImplDb extends AbstractDaoImplDb<Employee> {
 	@Override
 	public String getDeleteQuery(Employee item) {
 		return "delete from Персонал where id = " + item.getId();
+	}
+
+	@Override
+	public Employee getEmployee(String login, String password)
+			throws DaoException {
+		try {
+			Connection cn = null;
+			PreparedStatement st = null;
+			ResultSet rs = null;
+			try {
+				cn = DbConnection.getConnection();
+
+				st = cn.prepareStatement(getListQuery()
+						+ " where Логин = ? and Пароль = ?");
+				st.setString(1, login);
+				st.setString(2, password);
+
+				rs = st.executeQuery();
+				if (!rs.next())
+					throw new SQLException("Неверная комбинация логин/пароль.");
+
+				return getItemFromListQuery(rs);
+			} finally {
+				DbConnection.closeResultSets(rs);
+				DbConnection.closeStatements(st);
+				DbConnection.closeConnection(cn);
+			}
+		} catch (SQLException e) {
+			throw new DaoException("Ошибка входа. " + e.getMessage(), e);
+		}
 	}
 
 }

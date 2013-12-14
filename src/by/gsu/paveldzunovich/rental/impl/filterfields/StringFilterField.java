@@ -20,6 +20,12 @@ public class StringFilterField<T> extends JTextField implements IFilterField<T> 
 		this.getDocument().addDocumentListener(dl);
 	}
 
+	public StringFilterField(String name, DocumentListener dl, int length) {
+		super("", length);
+		this.name = name;
+		this.getDocument().addDocumentListener(dl);
+	}
+
 	@Override
 	public String getName() {
 		return name;

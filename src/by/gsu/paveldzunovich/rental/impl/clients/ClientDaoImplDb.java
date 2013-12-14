@@ -1,14 +1,21 @@
 package by.gsu.paveldzunovich.rental.impl.clients;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import by.gsu.paveldzunovich.rental.connection.DbConnection;
 import by.gsu.paveldzunovich.rental.exceptions.DaoException;
-import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractDaoImplDb;
+import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
+import by.gsu.paveldzunovich.rental.ifaces.IClientDao;
 import by.gsu.paveldzunovich.rental.model.Client;
 
-public class ClientDaoImplDb extends AbstractDaoImplDb<Client> {
+public class ClientDaoImplDb extends AbstractDaoImplDb<Client> implements
+		IClientDao {
 
 	@Override
 	public AbstractTableRepresentation<Client> getItemTableRepresentation(
@@ -56,6 +63,31 @@ public class ClientDaoImplDb extends AbstractDaoImplDb<Client> {
 	@Override
 	public String getDeleteQuery(Client item) {
 		return "delete from Клиент where id = " + item.getId();
+	}
+
+	@Override
+	public List<Client> getDebtors() throws DaoException {
+		try {
+			Connection cn = null;
+			PreparedStatement st = null;
+			ResultSet rs = null;
+			try {
+				cn = DbConnection.getConnection();
+				st = cn.prepareStatement("exec get_debtors");
+				rs = st.executeQuery();
+				List<Client> debtors = new ArrayList<Client>();
+				while (rs.next()) {
+					debtors.add(getItemFromListQuery(rs));
+				}
+				return debtors;
+			} finally {
+				DbConnection.closeResultSets(rs);
+				DbConnection.closeStatements(st);
+				DbConnection.closeConnection(cn);
+			}
+		} catch (SQLException e) {
+			throw new DaoException("Ошибка получения списка должников.", e);
+		}
 	}
 
 }

@@ -8,7 +8,7 @@ import java.sql.Statement;
 
 public class DbConnection {
 
-	private static final String URL = "jdbc:sqlserver://localhost:1443;integratedSecurity=true";
+	private static String URL = "jdbc:sqlserver://localhost:1443;integratedSecurity=true";
 	private static final String DRIVER_NAME = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 	private static final String USERNAME = "";
 	private static final String PASSWORD = "";
@@ -21,6 +21,11 @@ public class DbConnection {
 		} catch (ClassNotFoundException e) {
 			throw new IllegalArgumentException(DRIVER_NOT_FOUND_ERROR, e);
 		}
+	}
+
+	public static void initialize(String url, String port) {
+		URL = "jdbc:sqlserver://" + url + ":" + port
+				+ ";integratedSecurity=true";
 	}
 
 	public static Connection getConnection() throws SQLException {

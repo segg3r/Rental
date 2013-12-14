@@ -32,6 +32,7 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 	private static final long serialVersionUID = 1L;
 	private FilterItemHolderComponent<T> filterItemComponent;
 	private JPanel filterPanel;
+	private StringFilterField<T> filterField;
 	private List<IFilterField<T>> filterFields = new ArrayList<IFilterField<T>>();
 
 	public FilterItemFrame(IItemDao<T> itemDao, IUiStrings<T> uiStrings) {
@@ -76,11 +77,12 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 
 	protected JPanel getFilterPanel() {
 		filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		addFilter(new StringFilterField<T>("Фильтр: ", getFilterListener()));
+		addFilterField(filterField = new StringFilterField<T>("Фильтр: ",
+				getFilterListener()));
 		return filterPanel;
 	}
 
-	protected void addFilter(IFilterField<T> filterField) {
+	protected void addFilterField(IFilterField<T> filterField) {
 		filterPanel.add(new JLabel(filterField.getName()));
 		filterPanel.add(filterField.getComponent());
 		filterFields.add(filterField);
@@ -105,7 +107,7 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 		return filterItemComponent;
 	}
 
-	private DocumentListener getFilterListener() {
+	public DocumentListener getFilterListener() {
 		return new DocumentListener() {
 
 			@Override
@@ -126,13 +128,16 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 	}
 
 	public void filter() {
-		List<IFilter<T>> filters = new ArrayList<IFilter<T>>();
-		for (IFilterField<T> filterField : filterFields) {
-			if (filterField.doFilter()) {
-				filters.add(filterField.getFilter());
+		synchronized (FilterItemFrame.class) {
+			List<IFilter<T>> filters = new ArrayList<IFilter<T>>();
+			for (IFilterField<T> filterField : filterFields) {
+				if (filterField.doFilter()) {
+					filters.add(filterField.getFilter());
+				}
 			}
+
+			filter(filters);
 		}
-		filter(filters);
 	}
 
 	public void filter(final List<IFilter<T>> filters) {
@@ -153,6 +158,14 @@ public class FilterItemFrame<T> extends ItemFrame<T> {
 				}
 			}
 		}).start();
+	}
+
+	public StringFilterField<T> getFilterField() {
+		return filterField;
+	}
+
+	public void setFilterField(StringFilterField<T> filterField) {
+		this.filterField = filterField;
 	}
 
 }

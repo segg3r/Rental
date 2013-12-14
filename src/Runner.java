@@ -1,9 +1,12 @@
-import by.gsu.paveldzunovich.rental.ui.MainFrame;
+import java.util.TimeZone;
+
+import by.gsu.paveldzunovich.rental.ui.ConnectionFrame;
 
 public class Runner {
 
 	public static void main(String[] args) {
-		new MainFrame().setVisible(true);
+		TimeZone.setDefault(TimeZone.getTimeZone("EAT"));
+		new ConnectionFrame().setVisible(true);
 	}
 
 }

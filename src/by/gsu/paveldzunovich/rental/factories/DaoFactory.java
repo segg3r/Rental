@@ -1,6 +1,11 @@
 package by.gsu.paveldzunovich.rental.factories;
 
+import by.gsu.paveldzunovich.rental.ifaces.IClientDao;
+import by.gsu.paveldzunovich.rental.ifaces.IEmployeeDao;
 import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
+import by.gsu.paveldzunovich.rental.ifaces.IPayDao;
+import by.gsu.paveldzunovich.rental.ifaces.IRentalDao;
+import by.gsu.paveldzunovich.rental.ifaces.IRentalItemDao;
 import by.gsu.paveldzunovich.rental.impl.clients.ClientDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.employee.EmployeeDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.firm.FirmDaoImplDb;
@@ -9,14 +14,9 @@ import by.gsu.paveldzunovich.rental.impl.job.JobDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.pay.PayDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.rental.RentalDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.rentalitem.RentalItemDaoImplDb;
-import by.gsu.paveldzunovich.rental.model.Client;
-import by.gsu.paveldzunovich.rental.model.Employee;
 import by.gsu.paveldzunovich.rental.model.Firm;
 import by.gsu.paveldzunovich.rental.model.ItemType;
 import by.gsu.paveldzunovich.rental.model.Job;
-import by.gsu.paveldzunovich.rental.model.Pay;
-import by.gsu.paveldzunovich.rental.model.Rental;
-import by.gsu.paveldzunovich.rental.model.RentalItem;
 
 public class DaoFactory {
 
@@ -28,19 +28,19 @@ public class DaoFactory {
 		return new FirmDaoImplDb();
 	}
 
-	public static IItemDao<RentalItem> getRentalItemDao() {
+	public static IRentalItemDao getRentalItemDao() {
 		return new RentalItemDaoImplDb(getFirmDao(), getItemTypeDao());
 	}
 
-	public static IItemDao<Client> getClientDao() {
+	public static IClientDao getClientDao() {
 		return new ClientDaoImplDb();
 	}
 
-	public static IItemDao<Rental> getRentalDao() {
+	public static IRentalDao getRentalDao() {
 		return new RentalDaoImplDb(getRentalItemDao());
 	}
 
-	public static IItemDao<Employee> getEmployeeDao() {
+	public static IEmployeeDao getEmployeeDao() {
 		return new EmployeeDaoImplDb(getJobDao());
 	}
 
@@ -48,7 +48,7 @@ public class DaoFactory {
 		return new JobDaoImplDb();
 	}
 
-	public static IItemDao<Pay> getPayDao() {
+	public static IPayDao getPayDao() {
 		return new PayDaoImplDb(getRentalDao());
 	}
 }

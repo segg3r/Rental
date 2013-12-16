@@ -1,13 +1,18 @@
 package by.gsu.paveldzunovich.rental.ui.impl;
 
 import java.awt.FlowLayout;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
+import by.gsu.paveldzunovich.rental.Application;
 import by.gsu.paveldzunovich.rental.exceptions.DaoException;
 import by.gsu.paveldzunovich.rental.exceptions.UiException;
 import by.gsu.paveldzunovich.rental.factories.DaoFactory;
@@ -46,24 +51,7 @@ public class JobItemFrame extends FilterItemFrame<Job> {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					Employee item = new Employee();
-					item.setJob(getItemHolder().getSelectedItem());
-
-					IEmployeeDao itemDao = DaoFactory.getEmployeeDao();
-
-					item = WindowBuilder.build(
-							new ItemDialog<Employee>(JobItemFrame.this,
-									new JobUiStrings().getAddItemHeader(),
-									itemDao.getItemTableRepresentation(item)))
-							.getItem();
-
-					if (item != null) {
-						itemDao.addItem(item);
-					}
-				} catch (UiException | DaoException ex) {
-					UiErrorHandler.handleError(ex.getMessage());
-				}
+				addEmp();
 			}
 
 		});
@@ -73,17 +61,7 @@ public class JobItemFrame extends FilterItemFrame<Job> {
 
 			@Override
 			public void actionPerformed(ActionEvent ev) {
-				try {
-					IItemHolder<Job> itemTable = getItemHolder();
-					Job job = itemTable.getSelectedItem();
-					EmployeeItemFrame employeeItemFrame = WindowFactory
-							.getEmployeeItemFrame();
-					employeeItemFrame.getJobFilter().setSelectedItem(job);
-					employeeItemFrame.setVisible(true);
-
-				} catch (UiException e) {
-					UiErrorHandler.handleError(e.getMessage());
-				}
+				showEmp();
 			}
 
 		});
@@ -91,6 +69,70 @@ public class JobItemFrame extends FilterItemFrame<Job> {
 		additionalButtonPanel.add(showItemsButton);
 
 		return additionalButtonPanel;
+	}
+
+	protected void showEmp() {
+		try {
+			IItemHolder<Job> itemTable = getItemHolder();
+			Job job = itemTable.getSelectedItem();
+			EmployeeItemFrame employeeItemFrame = WindowFactory
+					.getEmployeeItemFrame();
+			employeeItemFrame.getJobFilter().setSelectedItem(job);
+			employeeItemFrame.setVisible(true);
+
+		} catch (UiException e) {
+			UiErrorHandler.handleError(e.getMessage());
+		}
+	}
+
+	protected void addEmp() {
+		try {
+			Employee item = new Employee();
+			item.setJob(getItemHolder().getSelectedItem());
+
+			IEmployeeDao itemDao = DaoFactory.getEmployeeDao();
+
+			item = WindowBuilder.build(
+					new ItemDialog<Employee>(JobItemFrame.this,
+							new JobUiStrings().getAddItemHeader(), itemDao
+									.getItemTableRepresentation(item)))
+					.getItem();
+
+			if (item != null) {
+				itemDao.addItem(item);
+			}
+		} catch (UiException | DaoException ex) {
+			UiErrorHandler.handleError(ex.getMessage());
+		}
+	}
+
+	public void initializeKeyboardListener() {
+		super.initializeKeyboardListener();
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+				.addKeyEventDispatcher(new KeyEventDispatcher() {
+					@Override
+					public boolean dispatchKeyEvent(KeyEvent e) {
+						if (SwingUtilities.getRoot(e.getComponent()) == JobItemFrame.this)
+							if (JobItemFrame.this.isVisible()) {
+								int code = e.getKeyCode();
+								boolean ctrlPressed = (e.getModifiers() & KeyEvent.CTRL_MASK) != 0;
+								if (ctrlPressed) {
+									if (code == KeyEvent.VK_1
+											|| code == KeyEvent.VK_2) {
+										Application.PRESSED = !Application.PRESSED;
+										if (Application.PRESSED) {
+											if (code == KeyEvent.VK_1) {
+												addEmp();
+											} else if (code == KeyEvent.VK_2) {
+												showEmp();
+											}
+										}
+									}
+								}
+							}
+						return false;
+					}
+				});
 	}
 
 }

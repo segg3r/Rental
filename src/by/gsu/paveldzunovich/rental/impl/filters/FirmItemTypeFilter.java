@@ -29,7 +29,6 @@ public class FirmItemTypeFilter implements IFilter<RentalItem> {
 					firm, itemType);
 			return filteredItems;
 		} catch (DaoException e) {
-			e.printStackTrace();
 			return items;
 		}
 

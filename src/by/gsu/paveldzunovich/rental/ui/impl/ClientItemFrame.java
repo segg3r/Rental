@@ -1,14 +1,18 @@
 package by.gsu.paveldzunovich.rental.ui.impl;
 
-import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
+import by.gsu.paveldzunovich.rental.Application;
 import by.gsu.paveldzunovich.rental.exceptions.DaoException;
 import by.gsu.paveldzunovich.rental.exceptions.UiException;
 import by.gsu.paveldzunovich.rental.factories.DaoFactory;
@@ -43,11 +47,7 @@ public class ClientItemFrame extends FilterItemFrame<Client> {
 		return super.createItemHolder(new FilterItemList<Client>(getItemDao()));
 	}
 
-	public JComponent getButtonPanel() {
-		JComponent mainButtonPanel = super.getButtonPanel();
-
-		JPanel buttonPanel = new JPanel(new BorderLayout());
-
+	public Component getAdditionalButtonPanel() {
 		JPanel additionalButtonPanel = new JPanel(new FlowLayout(
 				FlowLayout.LEFT, 5, 5));
 
@@ -57,24 +57,7 @@ public class ClientItemFrame extends FilterItemFrame<Client> {
 
 			@Override
 			public void actionPerformed(ActionEvent ev) {
-				try {
-					Rental item = new Rental();
-					item.setClient(getItemHolder().getSelectedItem());
-
-					IItemDao<Rental> itemDao = DaoFactory.getRentalDao();
-
-					item = WindowBuilder.build(
-							new ItemDialog<Rental>(ClientItemFrame.this,
-									new RentalUiStrings().getAddItemHeader(),
-									itemDao.getItemTableRepresentation(item)))
-							.getItem();
-
-					if (item != null) {
-						itemDao.addItem(item);
-					}
-				} catch (UiException | DaoException ex) {
-					UiErrorHandler.handleError(ex.getMessage());
-				}
+				doRental();
 			}
 
 		});
@@ -85,25 +68,74 @@ public class ClientItemFrame extends FilterItemFrame<Client> {
 
 			@Override
 			public void actionPerformed(ActionEvent ev) {
-				try {
-					RentalItemFrame frame = WindowFactory.getRentalItemFrame();
-					Client client = getItemHolder().getSelectedItem();
-					frame.getClientFilter().setSelectedItem(client);
-					frame.setVisible(true);
-				} catch (UiException e) {
-					UiErrorHandler.handleError(e.getMessage());
-				}
+				showRentals();
 			}
 
 		});
 
 		additionalButtonPanel.add(addRentalButton);
 		additionalButtonPanel.add(showRentalsButton);
-
-		buttonPanel.add(additionalButtonPanel, BorderLayout.CENTER);
-		buttonPanel.add(mainButtonPanel, BorderLayout.EAST);
-
-		return buttonPanel;
+		return additionalButtonPanel;
 	}
 
+	protected void showRentals() {
+		try {
+			RentalItemFrame frame = WindowFactory.getRentalItemFrame();
+			Client client = getItemHolder().getSelectedItem();
+			frame.getClientFilter().setSelectedItem(client);
+			frame.setVisible(true);
+		} catch (UiException e) {
+			UiErrorHandler.handleError(e.getMessage());
+		}
+	}
+
+	protected void doRental() {
+		try {
+			Rental item = new Rental();
+			item.setClient(getItemHolder().getSelectedItem());
+
+			IItemDao<Rental> itemDao = DaoFactory.getRentalDao();
+
+			item = WindowBuilder.build(
+					new ItemDialog<Rental>(ClientItemFrame.this,
+							new RentalUiStrings().getAddItemHeader(), itemDao
+									.getItemTableRepresentation(item)))
+					.getItem();
+
+			if (item != null) {
+				itemDao.addItem(item);
+			}
+		} catch (UiException | DaoException ex) {
+			UiErrorHandler.handleError(ex.getMessage());
+		}
+	}
+
+	public void initializeKeyboardListener() {
+		super.initializeKeyboardListener();
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+				.addKeyEventDispatcher(new KeyEventDispatcher() {
+					@Override
+					public boolean dispatchKeyEvent(KeyEvent e) {
+						if (SwingUtilities.getRoot(e.getComponent()) == ClientItemFrame.this)
+							if (ClientItemFrame.this.isVisible()) {
+								int code = e.getKeyCode();
+								boolean ctrlPressed = (e.getModifiers() & KeyEvent.CTRL_MASK) != 0;
+								if (ctrlPressed) {
+									if (code == KeyEvent.VK_1
+											|| code == KeyEvent.VK_2) {
+										Application.PRESSED = !Application.PRESSED;
+										if (Application.PRESSED) {
+											if (code == KeyEvent.VK_1) {
+												doRental();
+											} else if (code == KeyEvent.VK_2) {
+												showRentals();
+											}
+										}
+									}
+								}
+							}
+						return false;
+					}
+				});
+	}
 }

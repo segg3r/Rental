@@ -9,4 +9,6 @@ public class Application {
 	public static final String MANAGER = "Менеджер по продажам";
 	public static final String ACCOUNTANT = "Бухгалтер";
 
+	public static boolean PRESSED;
+
 }

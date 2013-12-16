@@ -54,7 +54,6 @@ public abstract class SelectionFilterField<T, K> implements IFilterField<T> {
 	}
 
 	public K getSelectedItem() {
-		System.out.println(field.getValue());
 		return field.getValue();
 	}
 

@@ -46,7 +46,7 @@ public class PayTableRepresentation extends AbstractTableRepresentation<Pay> {
 		this.amount = new TextItemField("Сумма", String.valueOf(item
 				.getAmount()), Visibility.DATA_ONLY, "руб.");
 		this.date = new CalendarItemField("Дата", Visibility.VISIBLE,
-				item.getDate());
+				item.getDate(), item.getId() != 0);
 		this.comissionAmount = new LabelItemField("Сумма с комиссией", "",
 				Visibility.VISIBLE, "руб.");
 		this.leftToPay = new LabelItemField("Осталось к оплате", "",
@@ -121,8 +121,6 @@ public class PayTableRepresentation extends AbstractTableRepresentation<Pay> {
 				throw new ItemFieldException(rental, "Выберите прокат");
 			if (payType.getValue().getId() == 0)
 				throw new ItemFieldException(payType, "Выберите способ оплаты");
-			System.out.println(Integer.valueOf(leftToPay.getValue().substring(
-					0, leftToPay.getValue().indexOf(" "))));
 			if (am > Integer.valueOf(leftToPay.getValue().substring(0,
 					leftToPay.getValue().indexOf(" "))))
 				throw new ItemFieldException(amount,

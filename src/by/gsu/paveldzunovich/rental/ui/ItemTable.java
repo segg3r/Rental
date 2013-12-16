@@ -9,8 +9,8 @@ import javax.swing.table.DefaultTableModel;
 
 import by.gsu.paveldzunovich.rental.exceptions.DaoException;
 import by.gsu.paveldzunovich.rental.exceptions.UiException;
-import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
+import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
 
 public class ItemTable<T> extends ItemHolderComponent<T> {
 
@@ -28,6 +28,8 @@ public class ItemTable<T> extends ItemHolderComponent<T> {
 				return false;
 			}
 		};
+		table.setFocusable(true);
+		table.requestFocus();
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.model = new DefaultTableModel(new Object[][] {}, itemDao
 				.getItemTableRepresentation(itemDao.getNewItem())
@@ -66,6 +68,8 @@ public class ItemTable<T> extends ItemHolderComponent<T> {
 	}
 
 	public T getSelectedItem() throws UiException {
+		if (items.size() == 1)
+			return items.get(0);
 		int selectedRow = table.getSelectedRow();
 		if (selectedRow == -1) {
 			throw new UiException("Выберите сущность");

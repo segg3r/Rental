@@ -107,7 +107,6 @@ public class RentalDaoImplDb extends AbstractDaoImplDb<Rental> implements
 
 	@Override
 	public String getUpdateQuery(Rental item) {
-		System.out.println(DateUtil.format(item.getEndDate()));
 		return "update Прокат set idВещи = " + item.getRentalItem().getId()
 				+ ", idКлиента = " + item.getClient().getId()
 				+ ", idРаботника = " + item.getEmployee().getId()
@@ -154,7 +153,6 @@ public class RentalDaoImplDb extends AbstractDaoImplDb<Rental> implements
 						query += "and ";
 					query += "idВещи = " + rentalItem.getId();
 				}
-				System.out.println(query);
 
 				st = cn.prepareStatement(query);
 				rs = st.executeQuery();

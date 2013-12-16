@@ -55,4 +55,8 @@ public class Client {
 		return id == client.id;
 	}
 
+	public String getInfo() {
+		return name + " (" + phone + ")";
+	}
+
 }

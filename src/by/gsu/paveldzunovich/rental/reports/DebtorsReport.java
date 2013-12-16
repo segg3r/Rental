@@ -20,15 +20,11 @@ import by.gsu.paveldzunovich.rental.impl.filters.DebtorsFilter;
 import by.gsu.paveldzunovich.rental.model.Client;
 import by.gsu.paveldzunovich.rental.model.Rental;
 
-public class DebtorsReport implements IReport {
+public class DebtorsReport implements IReport<Rental> {
 
 	@Override
 	public JasperReportBuilder getReport() {
 		try {
-			List<Client> debtors = DaoFactory.getClientDao().getDebtors();
-			List<Rental> rentals = DaoFactory.getRentalDao().getItems();
-
-			rentals = new DebtorsFilter(debtors).filter(rentals);
 
 			StyleBuilder boldStyle = stl.style().bold();
 			StyleBuilder boldCenteredStyle = stl.style(boldStyle)
@@ -44,7 +40,7 @@ public class DebtorsReport implements IReport {
 			TextColumnBuilder<Integer> leftToPayColumn = col.column(
 					"Осталось оплатить", "leftToPay", new CurrencyType());
 			TextColumnBuilder<String> clientColumn = col.column("Клиент",
-					"client.name", type.stringType()).setStyle(
+					"client.info", type.stringType()).setStyle(
 					stl.style(titleStyle).setFontSize(12));
 
 			TextColumnBuilder<String> endDateColumn = col.column(
@@ -55,8 +51,9 @@ public class DebtorsReport implements IReport {
 			JasperReportBuilder report = report()
 					.setColumnTitleStyle(columnTitleStyle)
 					.highlightDetailOddRows()
-					.title(cmp.text("Оплаты").setStyle(titleStyle))
-					.setDataSource(rentals)
+					.title(cmp.text("Просроченные прокаты")
+							.setStyle(titleStyle))
+					.setDataSource(getData())
 					.columns(rentalIdColumn, clientColumn, endDateColumn,
 							leftToPayColumn)
 					.groupBy(clientColumn)
@@ -69,5 +66,13 @@ public class DebtorsReport implements IReport {
 		} catch (DaoException e) {
 			return null;
 		}
+	}
+
+	@Override
+	public List<Rental> getData() throws DaoException {
+		List<Client> debtors = DaoFactory.getClientDao().getDebtors();
+		List<Rental> rentals = DaoFactory.getRentalDao().getItems();
+		rentals = new DebtorsFilter(debtors).filter(rentals);
+		return rentals;
 	}
 }

@@ -14,6 +14,7 @@ public class WindowBuilder {
 		window.initializeFrame();
 
 		JPanel contentPanel = window.initializeContentPane();
+		window.initializeKeyboardListener();
 
 		Component mainPanel = window.getMainPanel();
 		Component buttonPanel = window.getButtonPanel();

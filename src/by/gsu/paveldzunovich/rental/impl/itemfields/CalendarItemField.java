@@ -13,9 +13,15 @@ public class CalendarItemField extends AbstractItemField<Date> {
 
 	private JDateChooser calendar;
 
-	public CalendarItemField(String name, Visibility visibility, Date date) {
+	public CalendarItemField(String name, Visibility visibility, Date date,
+			boolean enabled) {
 		super(name, visibility);
 		this.calendar = new JDateChooser(date);
+		calendar.setEnabled(enabled);
+	}
+
+	public CalendarItemField(String name, Visibility visibility, Date date) {
+		this(name, visibility, date, true);
 	}
 
 	@Override

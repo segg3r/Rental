@@ -24,7 +24,7 @@ import by.gsu.paveldzunovich.rental.ifaces.IPayDao;
 import by.gsu.paveldzunovich.rental.model.Pay;
 import by.gsu.paveldzunovich.rental.model.Rental;
 
-public class PayReport implements IReport {
+public class PayReport implements IReport<Pay> {
 
 	private Rental rental;
 	private Date after;
@@ -43,9 +43,6 @@ public class PayReport implements IReport {
 	@Override
 	public JasperReportBuilder getReport() {
 		try {
-			IPayDao payDao = DaoFactory.getPayDao();
-			List<Pay> data = payDao.getFilteredPays(rental, new java.sql.Date(
-					after.getTime()));
 
 			StyleBuilder boldStyle = stl.style().bold();
 			StyleBuilder boldCenteredStyle = stl.style(boldStyle)
@@ -85,7 +82,7 @@ public class PayReport implements IReport {
 					.setColumnTitleStyle(columnTitleStyle)
 					.highlightDetailOddRows()
 					.title(cmp.text("Оплаты").setStyle(titleStyle))
-					.setDataSource(data)
+					.setDataSource(getData())
 					.columns(array)
 					.groupBy(dateColumn)
 					.subtotalsAtSummary(
@@ -101,5 +98,13 @@ public class PayReport implements IReport {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	public List<Pay> getData() throws DaoException {
+		IPayDao payDao = DaoFactory.getPayDao();
+		List<Pay> data = payDao.getFilteredPays(rental,
+				new java.sql.Date(after.getTime()));
+		return data;
 	}
 }

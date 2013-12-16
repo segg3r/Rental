@@ -62,7 +62,7 @@ public class ClientDaoImplDb extends AbstractDaoImplDb<Client> implements
 
 	@Override
 	public String getDeleteQuery(Client item) {
-		return "delete from Клиент where id = " + item.getId();
+		return "exec delete_records_with_key 'Клиент', " + item.getId();
 	}
 
 	@Override

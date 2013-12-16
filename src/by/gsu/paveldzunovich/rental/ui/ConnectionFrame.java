@@ -2,8 +2,11 @@ package by.gsu.paveldzunovich.rental.ui;
 
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -11,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
@@ -123,25 +127,45 @@ public class ConnectionFrame extends JFrame {
 
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				try {
-					DbConnection.initialize(urlTextField.getText(),
-							portTextField.getText());
-					IEmployeeDao dao = DaoFactory.getEmployeeDao();
-
-					Employee employee = dao.getEmployee(
-							loginTextField.getText(),
-							passwordTextField.getText());
-
-					Application.employee = employee;
-					dispose();
-
-					new MainFrame().setVisible(true);
-				} catch (DaoException e) {
-					UiErrorHandler
-							.handleError("Ошибка инициализации подключения. "
-									+ e.getMessage());
-				}
+				connect();
 			}
 		});
+
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+				.addKeyEventDispatcher(new KeyEventDispatcher() {
+					@Override
+					public boolean dispatchKeyEvent(KeyEvent e) {
+						if (SwingUtilities.getRoot(e.getComponent()) == ConnectionFrame.this)
+							if (ConnectionFrame.this.isVisible()) {
+								int code = e.getKeyCode();
+								if (code == KeyEvent.VK_ENTER) {
+									Application.PRESSED = !Application.PRESSED;
+									if (Application.PRESSED) {
+										connect();
+									}
+								}
+							}
+						return false;
+					}
+				});
+	}
+
+	private void connect() {
+		try {
+			DbConnection.initialize(urlTextField.getText(),
+					portTextField.getText());
+			IEmployeeDao dao = DaoFactory.getEmployeeDao();
+
+			Employee employee = dao.getEmployee(loginTextField.getText(),
+					passwordTextField.getText());
+
+			Application.employee = employee;
+			dispose();
+
+			new MainFrame().setVisible(true);
+		} catch (DaoException e) {
+			UiErrorHandler.handleError("Ошибка инициализации подключения. "
+					+ e.getMessage());
+		}
 	}
 }

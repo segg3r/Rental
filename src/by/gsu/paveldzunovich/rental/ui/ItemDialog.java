@@ -3,19 +3,25 @@ package by.gsu.paveldzunovich.rental.ui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import by.gsu.paveldzunovich.rental.Application;
 import by.gsu.paveldzunovich.rental.exceptions.ItemFieldException;
+import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField.Visibility;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
 import by.gsu.paveldzunovich.rental.ifaces.IItemWindow;
-import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField.Visibility;
 import by.gsu.paveldzunovich.rental.ui.util.UiErrorHandler;
 
 public class ItemDialog<T> extends JDialog implements IItemWindow {
@@ -26,17 +32,19 @@ public class ItemDialog<T> extends JDialog implements IItemWindow {
 	private JPanel contentPanel = new JPanel();
 	private AbstractTableRepresentation<T> itemTableRepresentation;
 	private String title;
-	private JFrame frame;
+	private Window frame;
 
 	/**
 	 * Create the dialog.
 	 * 
-	 * @param frame
+	 * @param itemFrame
 	 */
-	public ItemDialog(JFrame frame, String title,
+	public ItemDialog(Window itemFrame, String title,
 			AbstractTableRepresentation<T> itemTableRepresentation) {
-		super(frame, true);
-		this.frame = frame;
+		super(itemFrame);
+		setModal(true);
+		setResizable(false);
+		this.frame = itemFrame;
 		this.itemTableRepresentation = itemTableRepresentation;
 		this.title = title;
 	}
@@ -60,7 +68,7 @@ public class ItemDialog<T> extends JDialog implements IItemWindow {
 		int height = itemTableRepresentation
 				.getFieldCount(Visibility.TABLE_ONLY) * 25 + 100;
 		if (frame != null) {
-			setBounds(frame.getX(), frame.getY(), 500, height);
+			setBounds(200, 200, 500, height);
 		} else {
 			setBounds(200, 200, 500, height);
 		}
@@ -77,7 +85,7 @@ public class ItemDialog<T> extends JDialog implements IItemWindow {
 				okAction();
 			}
 		});
-		okButton.setActionCommand("OK");
+
 		buttonPane.add(okButton);
 		getRootPane().setDefaultButton(okButton);
 		JButton cancelButton = new JButton("Отменить");
@@ -121,5 +129,31 @@ public class ItemDialog<T> extends JDialog implements IItemWindow {
 	@Override
 	public Component getUpperPanel() {
 		return null;
+	}
+
+	@Override
+	public void initializeKeyboardListener() {
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+				.addKeyEventDispatcher(new KeyEventDispatcher() {
+					@Override
+					public boolean dispatchKeyEvent(KeyEvent e) {
+						if (SwingUtilities.getRoot(e.getComponent()) == ItemDialog.this)
+							if (ItemDialog.this.isVisible()) {
+								int code = e.getKeyCode();
+								if (code == KeyEvent.VK_ESCAPE) {
+									Application.PRESSED = !Application.PRESSED;
+									if (Application.PRESSED) {
+										cancelAction();
+									}
+								} else if (code == KeyEvent.VK_ENTER) {
+									Application.PRESSED = !Application.PRESSED;
+									if (Application.PRESSED) {
+										okAction();
+									}
+								}
+							}
+						return false;
+					}
+				});
 	}
 }

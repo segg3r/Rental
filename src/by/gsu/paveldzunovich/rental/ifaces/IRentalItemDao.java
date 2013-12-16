@@ -12,4 +12,6 @@ public interface IRentalItemDao extends IItemDao<RentalItem> {
 	List<RentalItem> getFilteredItems(Firm firm, ItemType itemType)
 			throws DaoException;
 
+	List<Integer> getFreeItemsIds() throws DaoException;
+
 }

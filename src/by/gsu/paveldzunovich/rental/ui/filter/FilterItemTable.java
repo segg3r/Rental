@@ -19,6 +19,8 @@ public class FilterItemTable<T> extends FilterItemHolderComponent<T> {
 	}
 
 	public T getSelectedItem() throws UiException {
+		if (getItems().size() == 1)
+			return getItems().get(0);
 		int selectedRow = itemTable.getTable().getSelectedRow();
 		if (selectedRow == -1) {
 			throw new UiException("Выберите строку");

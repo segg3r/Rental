@@ -27,7 +27,7 @@ import by.gsu.paveldzunovich.rental.model.Employee;
 import by.gsu.paveldzunovich.rental.model.Rental;
 import by.gsu.paveldzunovich.rental.model.RentalItem;
 
-public class RentalReport implements IReport {
+public class RentalReport implements IReport<Rental> {
 
 	private boolean rentalItemNeeded;
 	private boolean employeeNeeded;
@@ -58,11 +58,7 @@ public class RentalReport implements IReport {
 	@Override
 	public JasperReportBuilder getReport() {
 		try {
-			List<Rental> rentalsFiltered = DaoFactory.getRentalDao()
-					.getFilteredRentals(client, employee, rentalItem);
-			rentalsFiltered = new SinceDateRentalFilter(since)
-					.filter(rentalsFiltered);
-
+			List<Rental> data = getData();
 			StyleBuilder boldStyle = stl.style().bold();
 			StyleBuilder boldCenteredStyle = stl.style(boldStyle)
 					.setHorizontalAlignment(HorizontalAlignment.CENTER);
@@ -127,7 +123,7 @@ public class RentalReport implements IReport {
 					.setColumnTitleStyle(columnTitleStyle)
 					.highlightDetailOddRows()
 					.title(cmp.text("Прокаты").setStyle(titleStyle))
-					.setDataSource(rentalsFiltered)
+					.setDataSource(data)
 					.columns(array)
 					.groupBy(groupColumn)
 					.subtotalsAtSummary(
@@ -148,5 +144,14 @@ public class RentalReport implements IReport {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	public List<Rental> getData() throws DaoException {
+		List<Rental> rentalsFiltered = DaoFactory.getRentalDao()
+				.getFilteredRentals(client, employee, rentalItem);
+		rentalsFiltered = new SinceDateRentalFilter(since)
+				.filter(rentalsFiltered);
+		return rentalsFiltered;
 	}
 }

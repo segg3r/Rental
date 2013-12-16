@@ -1,13 +1,18 @@
 package by.gsu.paveldzunovich.rental.ui.impl;
 
 import java.awt.FlowLayout;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
+import by.gsu.paveldzunovich.rental.Application;
 import by.gsu.paveldzunovich.rental.exceptions.DaoException;
 import by.gsu.paveldzunovich.rental.exceptions.UiException;
 import by.gsu.paveldzunovich.rental.factories.WindowFactory;
@@ -42,26 +47,7 @@ public class FirmItemFrame extends FilterItemFrame<Firm> {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					RentalItem item = new RentalItem();
-					item.setFirm(getItemHolder().getSelectedItem());
-
-					IItemDao<RentalItem> itemDao = new RentalItemDaoImplDb(
-							new FirmDaoImplDb(), new ItemTypeDaoImplDb());
-
-					item = WindowBuilder.build(
-							new ItemDialog<RentalItem>(FirmItemFrame.this,
-									new RentalItemUiStrings()
-											.getAddItemHeader(), itemDao
-											.getItemTableRepresentation(item)))
-							.getItem();
-
-					if (item != null) {
-						itemDao.addItem(item);
-					}
-				} catch (UiException | DaoException ex) {
-					UiErrorHandler.handleError(ex.getMessage());
-				}
+				addRentalItem();
 			}
 
 		});
@@ -71,17 +57,7 @@ public class FirmItemFrame extends FilterItemFrame<Firm> {
 
 			@Override
 			public void actionPerformed(ActionEvent ev) {
-				try {
-					IItemHolder<Firm> itemTable = getItemHolder();
-					Firm firm = itemTable.getSelectedItem();
-					RentalItemItemFrame rentalItemItemFrame = WindowFactory
-							.getRentalItemItemFrame();
-					rentalItemItemFrame.getFirmFilter().setSelectedItem(firm);
-					rentalItemItemFrame.setVisible(true);
-
-				} catch (UiException e) {
-					UiErrorHandler.handleError(e.getMessage());
-				}
+				showRentalItems();
 			}
 
 		});
@@ -89,5 +65,70 @@ public class FirmItemFrame extends FilterItemFrame<Firm> {
 		additionalButtonPanel.add(showItemsButton);
 
 		return additionalButtonPanel;
+	}
+
+	protected void showRentalItems() {
+		try {
+			IItemHolder<Firm> itemTable = getItemHolder();
+			Firm firm = itemTable.getSelectedItem();
+			RentalItemItemFrame rentalItemItemFrame = WindowFactory
+					.getRentalItemItemFrame();
+			rentalItemItemFrame.getFirmFilter().setSelectedItem(firm);
+			rentalItemItemFrame.setVisible(true);
+
+		} catch (UiException e) {
+			UiErrorHandler.handleError(e.getMessage());
+		}
+	}
+
+	protected void addRentalItem() {
+		try {
+			RentalItem item = new RentalItem();
+			item.setFirm(getItemHolder().getSelectedItem());
+
+			IItemDao<RentalItem> itemDao = new RentalItemDaoImplDb(
+					new FirmDaoImplDb(), new ItemTypeDaoImplDb());
+
+			item = WindowBuilder.build(
+					new ItemDialog<RentalItem>(FirmItemFrame.this,
+							new RentalItemUiStrings().getAddItemHeader(),
+							itemDao.getItemTableRepresentation(item)))
+					.getItem();
+
+			if (item != null) {
+				itemDao.addItem(item);
+			}
+		} catch (UiException | DaoException ex) {
+			UiErrorHandler.handleError(ex.getMessage());
+		}
+	}
+
+	public void initializeKeyboardListener() {
+		super.initializeKeyboardListener();
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+				.addKeyEventDispatcher(new KeyEventDispatcher() {
+					@Override
+					public boolean dispatchKeyEvent(KeyEvent e) {
+						if (SwingUtilities.getRoot(e.getComponent()) == FirmItemFrame.this)
+							if (FirmItemFrame.this.isVisible()) {
+								int code = e.getKeyCode();
+								boolean ctrlPressed = (e.getModifiers() & KeyEvent.CTRL_MASK) != 0;
+								if (ctrlPressed) {
+									if (code == KeyEvent.VK_1
+											|| code == KeyEvent.VK_2) {
+										Application.PRESSED = !Application.PRESSED;
+										if (Application.PRESSED) {
+											if (code == KeyEvent.VK_1) {
+												addRentalItem();
+											} else if (code == KeyEvent.VK_2) {
+												showRentalItems();
+											}
+										}
+									}
+								}
+							}
+						return false;
+					}
+				});
 	}
 }

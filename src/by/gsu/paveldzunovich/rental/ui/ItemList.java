@@ -30,6 +30,8 @@ public class ItemList<T> extends ItemHolderComponent<T> {
 
 	@Override
 	public T getSelectedItem() throws UiException {
+		if (itemRepList.size() == 1)
+			return itemRepList.get(0).getItem();
 		for (JSelectablePanel panel : panels) {
 			if (panel.isSelected()) {
 				return itemRepList.get(panels.indexOf(panel)).getItem();

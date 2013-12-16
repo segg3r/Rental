@@ -2,15 +2,20 @@ package by.gsu.paveldzunovich.rental.ui.impl;
 
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
+import by.gsu.paveldzunovich.rental.Application;
 import by.gsu.paveldzunovich.rental.exceptions.DaoException;
 import by.gsu.paveldzunovich.rental.exceptions.UiException;
 import by.gsu.paveldzunovich.rental.factories.DaoFactory;
@@ -19,6 +24,7 @@ import by.gsu.paveldzunovich.rental.ifaces.IFilter;
 import by.gsu.paveldzunovich.rental.ifaces.IItemDao;
 import by.gsu.paveldzunovich.rental.ifaces.IItemHolder;
 import by.gsu.paveldzunovich.rental.ifaces.IUiStrings;
+import by.gsu.paveldzunovich.rental.impl.filterfields.checkfields.FreeItemFilterField;
 import by.gsu.paveldzunovich.rental.impl.filterfields.selectionfilterfields.FirmFilterField;
 import by.gsu.paveldzunovich.rental.impl.filterfields.selectionfilterfields.ItemTypeFilterField;
 import by.gsu.paveldzunovich.rental.impl.filterfields.stringfilterfields.InventoryNumberStringFilterField;
@@ -44,6 +50,7 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 	private InventoryNumberStringFilterField inventoryNumberFilterField;
 	private ItemTypeFilterField itemTypeFilterField;
 	private FirmFilterField firmFilterField;
+	private FreeItemFilterField freeItemFilter;
 
 	public RentalItemItemFrame(IItemDao<RentalItem> itemDao,
 			IUiStrings<RentalItem> uiStrings) {
@@ -52,7 +59,7 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 
 	public void initializeFrame() {
 		super.initializeFrame();
-		setSize(1000, 600);
+		setSize(1100, 600);
 	}
 
 	public IItemHolder<RentalItem> createItemHolder() throws DaoException {
@@ -60,56 +67,68 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 				getItemDao()));
 	}
 
-	protected Component getAdditionalButtonPanel() {
+	public Component getAdditionalButtonPanel() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
-		getDeleteButton().setText("Удалить с повреждениями");
 		JButton showRentalsButton = new JButton("Показать прокаты");
 		showRentalsButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				try {
-					RentalItemFrame rentalItemFrame = WindowFactory
-							.getRentalItemFrame();
-					rentalItemFrame.getRentalItemFilter().setSelectedItem(
-							getItemHolder().getSelectedItem());
-					rentalItemFrame.setVisible(true);
-				} catch (UiException e) {
-					UiErrorHandler.handleError(e.getMessage());
-				}
+				showRentals();
 			}
 		});
-
-		panel.add(showRentalsButton);
 
 		JButton doRental = new JButton("Оформить прокат");
 		doRental.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				try {
-					Rental rental = new Rental();
-					rental.setBeginDate(new Date(new java.util.Date().getTime()));
-					rental.setEndDate(new Date(new java.util.Date().getTime()));
-					rental.setRentalItem(getItemHolder().getSelectedItem());
-					IItemDao<Rental> rentalDao = DaoFactory.getRentalDao();
-					ItemDialog<Rental> itemDialog = WindowBuilder.build(new ItemDialog<Rental>(
-							RentalItemItemFrame.this, new RentalUiStrings()
-									.getAddItemHeader(), rentalDao
-									.getItemTableRepresentation(rental)));
-
-					rental = itemDialog.getItem();
-					if (rental != null) {
-						rentalDao.addItem(rental);
-					}
-				} catch (DaoException | UiException e) {
-					UiErrorHandler.handleError(e.getMessage());
-				}
+				doRental();
 			}
 		});
 		panel.add(doRental);
+		panel.add(showRentalsButton);
 		return panel;
+	}
+
+	protected void doRental() {
+		try {
+			Rental rental = new Rental();
+			RentalItem rentalItem = getItemHolder().getSelectedItem();
+			List<Integer> freeItems = DaoFactory.getRentalItemDao()
+					.getFreeItemsIds();
+			if (!freeItems.contains(rentalItem.getId())) {
+				throw new DaoException("Эта вещь находится в прокате.");
+			}
+			rental.setBeginDate(new Date(new java.util.Date().getTime()));
+			rental.setEndDate(new Date(new java.util.Date().getTime()));
+			rental.setRentalItem(rentalItem);
+			IItemDao<Rental> rentalDao = DaoFactory.getRentalDao();
+			ItemDialog<Rental> itemDialog = WindowBuilder
+					.build(new ItemDialog<Rental>(RentalItemItemFrame.this,
+							new RentalUiStrings().getAddItemHeader(), rentalDao
+									.getItemTableRepresentation(rental)));
+
+			rental = itemDialog.getItem();
+			if (rental != null) {
+				rentalDao.addItem(rental);
+			}
+		} catch (DaoException | UiException e) {
+			UiErrorHandler.handleError(e.getMessage());
+		}
+	}
+
+	protected void showRentals() {
+		try {
+			RentalItemFrame rentalItemFrame = WindowFactory
+					.getRentalItemFrame();
+			rentalItemFrame.getRentalItemFilter().setSelectedItem(
+					getItemHolder().getSelectedItem());
+			rentalItemFrame.setVisible(true);
+		} catch (UiException e) {
+			UiErrorHandler.handleError(e.getMessage());
+		}
 	}
 
 	protected JPanel getFilterPanel() {
@@ -117,7 +136,7 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 		panel.removeAll();
 
 		try {
-			itemTypeFilterField = new ItemTypeFilterField("Предмет:",
+			itemTypeFilterField = new ItemTypeFilterField("Тип:",
 					new ItemTypeDaoImplDb(), this);
 			itemTypeFilter = itemTypeFilterField;
 
@@ -131,6 +150,9 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 			addFilterField(inventoryNumberFilterField);
 			addFilterField(itemTypeFilterField);
 			addFilterField(firmFilterField);
+
+			addFilterField(freeItemFilter = new FreeItemFilterField(
+					"Только свободные:", getFilterActionListener()));
 		} catch (DaoException e) {
 			UiErrorHandler.handleError(e.getMessage());
 		}
@@ -143,6 +165,9 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 			List<IFilter<RentalItem>> filters = new ArrayList<IFilter<RentalItem>>();
 			filters.add(new FirmItemTypeFilter(firmFilterField
 					.getSelectedItem(), itemTypeFilterField.getSelectedItem()));
+			if (freeItemFilter.doFilter()) {
+				filters.add(freeItemFilter.getFilter());
+			}
 			if (inventoryNumberFilterField.doFilter()) {
 				filters.add(inventoryNumberFilterField.getFilter());
 			}
@@ -151,6 +176,7 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 	}
 
 	protected void clearFilters() {
+		freeItemFilter.clearFilter();
 		inventoryNumberFilterField.clearFilter();
 		itemTypeFilter.setSelectedItem(new ItemType());
 		firmFilter.setSelectedItem(new Firm());
@@ -162,6 +188,39 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 
 	public FirmFilterField getFirmFilter() {
 		return firmFilter;
+	}
+
+	public FreeItemFilterField getFreeItemFilter() {
+		return freeItemFilter;
+	}
+
+	public void initializeKeyboardListener() {
+		super.initializeKeyboardListener();
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+				.addKeyEventDispatcher(new KeyEventDispatcher() {
+					@Override
+					public boolean dispatchKeyEvent(KeyEvent e) {
+						if (SwingUtilities.getRoot(e.getComponent()) == RentalItemItemFrame.this)
+							if (RentalItemItemFrame.this.isVisible()) {
+								int code = e.getKeyCode();
+								boolean ctrlPressed = (e.getModifiers() & KeyEvent.CTRL_MASK) != 0;
+								if (ctrlPressed) {
+									if (code == KeyEvent.VK_1
+											|| code == KeyEvent.VK_2) {
+										Application.PRESSED = !Application.PRESSED;
+										if (Application.PRESSED) {
+											if (code == KeyEvent.VK_1) {
+												doRental();
+											} else if (code == KeyEvent.VK_2) {
+												showRentals();
+											}
+										}
+									}
+								}
+							}
+						return false;
+					}
+				});
 	}
 
 }

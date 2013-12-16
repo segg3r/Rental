@@ -16,4 +16,6 @@ public interface IItemWindow {
 
 	Component getUpperPanel();
 
+	void initializeKeyboardListener();
+
 }

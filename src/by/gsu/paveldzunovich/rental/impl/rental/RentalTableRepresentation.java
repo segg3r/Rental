@@ -5,16 +5,20 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import by.gsu.paveldzunovich.rental.exceptions.DaoException;
 import by.gsu.paveldzunovich.rental.exceptions.ItemFieldException;
+import by.gsu.paveldzunovich.rental.factories.DaoFactory;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractItemField.Visibility;
 import by.gsu.paveldzunovich.rental.ifaces.AbstractTableRepresentation;
 import by.gsu.paveldzunovich.rental.impl.itemfields.CalendarItemField;
 import by.gsu.paveldzunovich.rental.impl.itemfields.LabelItemField;
+import by.gsu.paveldzunovich.rental.impl.itemfields.RentalItemSelectionItemField;
 import by.gsu.paveldzunovich.rental.impl.itemfields.SelectionItemField;
 import by.gsu.paveldzunovich.rental.model.Client;
 import by.gsu.paveldzunovich.rental.model.Employee;
@@ -34,9 +38,9 @@ public class RentalTableRepresentation extends
 
 	public RentalTableRepresentation(Rental item) {
 		super(item);
-		this.rentalItem = new SelectionItemField<RentalItem>("Предмет",
+		this.rentalItem = new RentalItemSelectionItemField("Предмет",
 				item.getRentalItem(), (item.getId() == 0 && item
-						.getRentalItem().getId() != 0));
+						.getRentalItem().getId() != 0), item.getId() == 0);
 		this.employee = new SelectionItemField<Employee>("Работник",
 				item.getEmployee(), Visibility.DATA_ONLY,
 				(item.getId() == 0 && item.getEmployee().getId() != 0));
@@ -44,7 +48,7 @@ public class RentalTableRepresentation extends
 				item.getClient(), (item.getId() == 0 && item.getClient()
 						.getId() != 0));
 		this.beginDate = new CalendarItemField("Дата выдачи",
-				Visibility.VISIBLE, item.getBeginDate());
+				Visibility.VISIBLE, item.getBeginDate(), item.getId() != 0);
 		this.endDate = new CalendarItemField("Дата возврата",
 				Visibility.VISIBLE, item.getEndDate());
 		this.totalCost = new LabelItemField("Стоимость", String.valueOf(item
@@ -83,15 +87,27 @@ public class RentalTableRepresentation extends
 		if (endDate.getValue() == null)
 			throw new ItemFieldException(endDate,
 					"Выберите верную дату завершения проката");
-		if (beginDate.getValue().after(endDate.getValue()))
+		if (!beginDate.getValue().before(endDate.getValue()))
 			throw new ItemFieldException(beginDate,
-					"Дата начала проката позже даты конца проката");
+					"Дата завершение должна быть позже даты начала");
 		if (client.getValue().getId() == 0)
 			throw new ItemFieldException(client, "Выберите клиента");
 		if (employee.getValue().getId() == 0)
 			throw new ItemFieldException(employee, "Выберите работника");
 		if (rentalItem.getValue().getId() == 0)
 			throw new ItemFieldException(rentalItem, "Выберите предмет проката");
+
+		try {
+			List<Integer> freeItems = DaoFactory.getRentalItemDao()
+					.getFreeItemsIds();
+			if (!freeItems.contains(rentalItem.getValue().getId())
+					&& getItem().getId() == 0) {
+				throw new DaoException();
+			}
+		} catch (DaoException e) {
+			throw new ItemFieldException(rentalItem, "Эта вещь уже в прокате");
+		}
+
 		Rental item = getItem();
 		item.setClient(client.getValue());
 		item.setBeginDate(beginDate.getValue());

@@ -21,4 +21,11 @@ public class JobFilterField extends SelectionFilterField<Employee, Job> {
 		return new JobFilter(getSelectedItem());
 	}
 
+	public boolean doFilter() {
+		Job item = getSelectedItem();
+		if (item == null)
+			return false;
+		return item.getId() != 0;
+	}
+
 }

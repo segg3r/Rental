@@ -1,9 +1,14 @@
 package by.gsu.paveldzunovich.rental.reports;
 
-import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
+import java.util.List;
 
-public interface IReport {
+import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
+import by.gsu.paveldzunovich.rental.exceptions.DaoException;
+
+public interface IReport<T> {
+
+	List<T> getData() throws DaoException;
 
 	JasperReportBuilder getReport();
-	
+
 }

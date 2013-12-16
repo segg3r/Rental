@@ -4,8 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -20,6 +23,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import net.sf.dynamicreports.report.exception.DRException;
@@ -63,7 +67,7 @@ public class MainFrame extends JFrame {
 		menuBar.add(mnShowMenu);
 
 		if (job.equals(Application.MANAGER)) {
-			JMenuItem firmsMenuItem = new JMenuItem("Фирмы");
+			JMenuItem firmsMenuItem = new JMenuItem("Фирмы (CTRL+F)");
 			firmsMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					WindowFactory.getFirmFrame().setVisible(true);
@@ -72,7 +76,7 @@ public class MainFrame extends JFrame {
 			mnShowMenu.add(firmsMenuItem);
 
 			JMenuItem itemTypesMenuItem = new JMenuItem(
-					"\u0422\u0438\u043F\u044B \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u043E\u0432");
+					"Типы предметов (CTRL+T)");
 			itemTypesMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					WindowFactory.getItemTypeFrame().setVisible(true);
@@ -80,8 +84,7 @@ public class MainFrame extends JFrame {
 			});
 			mnShowMenu.add(itemTypesMenuItem);
 
-			JMenuItem rentalItemsMenuItem = new JMenuItem(
-					"\u041F\u0440\u0435\u0434\u043C\u0435\u0442\u044B \u043F\u0440\u043E\u043A\u0430\u0442\u0430");
+			JMenuItem rentalItemsMenuItem = new JMenuItem("Вещи (CTRL+I)");
 			rentalItemsMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					WindowFactory.getRentalItemItemFrame().setVisible(true);
@@ -89,49 +92,35 @@ public class MainFrame extends JFrame {
 			});
 			mnShowMenu.add(rentalItemsMenuItem);
 
-			JMenuItem menuItem = new JMenuItem(
-					"\u041A\u043B\u0438\u0435\u043D\u0442\u044B");
-			menuItem.addActionListener(new ActionListener() {
+			JMenuItem clientMenuItem = new JMenuItem("Клиенты (CTRL+C)");
+			clientMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					WindowFactory.getClientItemFrame().setVisible(true);
 				}
 			});
-			mnShowMenu.add(menuItem);
+			mnShowMenu.add(clientMenuItem);
 
-			JMenuItem mntmNewMenuItem_2 = new JMenuItem(
-					"\u041F\u043E\u0432\u0440\u0435\u0436\u0434\u0435\u043D\u0438\u044F");
-			mntmNewMenuItem_2.addActionListener(new ActionListener() {
+			JMenuItem damagesMenuItem = new JMenuItem("Повреждения (CTRL+D)");
+			damagesMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					WindowFactory.getDamageItemFrame().setVisible(true);
 				}
 			});
-			mnShowMenu.add(mntmNewMenuItem_2);
+			mnShowMenu.add(damagesMenuItem);
 
-			JMenuItem mntmNewMenuItem_4 = new JMenuItem(
-					"\u041F\u0440\u043E\u043A\u0430\u0442\u044B");
-			mntmNewMenuItem_4.addActionListener(new ActionListener() {
+			JMenuItem rentalMenuItem = new JMenuItem("Прокаты (CTRL+R)");
+			rentalMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					WindowFactory.getRentalItemFrame().setVisible(true);
 				}
 			});
-			mnShowMenu.add(mntmNewMenuItem_4);
+			mnShowMenu.add(rentalMenuItem);
 
-			JMenuItem mntmNewMenuItem_5 = new JMenuItem(
-					"\u041E\u043F\u043B\u0430\u0442\u044B");
-			mntmNewMenuItem_5.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent arg0) {
-					WindowFactory.getPayItemFrame().setVisible(true);
-				}
-			});
-			mnShowMenu.add(mntmNewMenuItem_5);
+			JMenu mnOperations = new JMenu("Операции");
+			menuBar.add(mnOperations);
 
-			JMenu mnNewMenu = new JMenu(
-					"\u041E\u043F\u0435\u0440\u0430\u0446\u0438\u0438");
-			menuBar.add(mnNewMenu);
-
-			JMenuItem mntmNewMenuItem_6 = new JMenuItem(
-					"\u041E\u0444\u043E\u0440\u043C\u0438\u0442\u044C \u043F\u0440\u043E\u043A\u0430\u0442");
-			mntmNewMenuItem_6.addActionListener(new ActionListener() {
+			JMenuItem doRentalMenuItem = new JMenuItem("Оформить прокат");
+			doRentalMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ev) {
 					try {
 						doRental();
@@ -140,11 +129,10 @@ public class MainFrame extends JFrame {
 					}
 				}
 			});
-			mnNewMenu.add(mntmNewMenuItem_6);
+			mnOperations.add(doRentalMenuItem);
 
-			JMenuItem mntmNewMenuItem_7 = new JMenuItem(
-					"\u041E\u0444\u043E\u0440\u043C\u0438\u0442\u044C \u043E\u043F\u043B\u0430\u0442\u0443");
-			mntmNewMenuItem_7.addActionListener(new ActionListener() {
+			JMenuItem doPayMenuItem = new JMenuItem("Оформить оплату");
+			doPayMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ev) {
 					try {
 						doPay();
@@ -153,34 +141,39 @@ public class MainFrame extends JFrame {
 					}
 				}
 			});
-			mnNewMenu.add(mntmNewMenuItem_7);
+			mnOperations.add(doPayMenuItem);
 		} else if (job.equals(Application.ACCOUNTANT)) {
-			JMenuItem mntmNewMenuItem_1 = new JMenuItem(
-					"\u0414\u043E\u043B\u0436\u043D\u043E\u0441\u0442\u0438");
-			mntmNewMenuItem_1.addActionListener(new ActionListener() {
+			JMenuItem jobMenuItem = new JMenuItem("Должности (CTRL+J)");
+			jobMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					WindowFactory.getJobItemFrame().setVisible(true);
 				}
 			});
-			mnShowMenu.add(mntmNewMenuItem_1);
-			JMenuItem mntmNewMenuItem_3 = new JMenuItem(
-					"\u041F\u0435\u0440\u0441\u043E\u043D\u0430\u043B");
-			mntmNewMenuItem_3.addActionListener(new ActionListener() {
+			mnShowMenu.add(jobMenuItem);
+			JMenuItem employeeMenuItem = new JMenuItem("Работники (CTRL+E");
+			employeeMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					WindowFactory.getEmployeeItemFrame().setVisible(true);
 				}
 			});
-			mnShowMenu.add(mntmNewMenuItem_3);
+			mnShowMenu.add(employeeMenuItem);
 		}
 
-		JMenuItem mntmNewMenuItem = new JMenuItem(
-				"\u0421\u043F\u043E\u0441\u043E\u0431\u044B \u043E\u043F\u043B\u0430\u0442\u044B");
-		mntmNewMenuItem.addActionListener(new ActionListener() {
+		JMenuItem payMenuItem = new JMenuItem("Оплаты (CTRL+P)");
+		payMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				WindowFactory.getPayItemFrame().setVisible(true);
+			}
+		});
+		mnShowMenu.add(payMenuItem);
+
+		JMenuItem payTypeMenuItem = new JMenuItem("Способы оплаты (CTRL+Q)");
+		payTypeMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				WindowFactory.getPayTypeItemFrame().setVisible(true);
 			}
 		});
-		mnShowMenu.add(mntmNewMenuItem);
+		mnShowMenu.add(payTypeMenuItem);
 
 		JMenu reportMenu = new JMenu("Отчеты");
 		menuBar.add(reportMenu);
@@ -304,6 +297,121 @@ public class MainFrame extends JFrame {
 		}
 		contentPane.add(middlePanel, BorderLayout.CENTER);
 
+		initializeKeyboardListener();
+	}
+
+	private void initializeKeyboardListener() {
+		if (Application.employee.getJob().getName().equals(Application.MANAGER)) {
+			KeyboardFocusManager.getCurrentKeyboardFocusManager()
+					.addKeyEventDispatcher(new KeyEventDispatcher() {
+						@Override
+						public boolean dispatchKeyEvent(KeyEvent e) {
+							if (SwingUtilities.getRoot(e.getComponent()) == MainFrame.this)
+								if (MainFrame.this.isVisible()) {
+									int code = e.getKeyCode();
+									boolean ctrlPressed = (e.getModifiers() & KeyEvent.CTRL_MASK) != 0;
+									if (ctrlPressed) {
+										if (code == KeyEvent.VK_F
+												|| code == KeyEvent.VK_T
+												|| code == KeyEvent.VK_I
+												|| code == KeyEvent.VK_C
+												|| code == KeyEvent.VK_D
+												|| code == KeyEvent.VK_P
+												|| code == KeyEvent.VK_R
+												|| code == KeyEvent.VK_Q) {
+											Application.PRESSED = !Application.PRESSED;
+											if (Application.PRESSED) {
+												if (code == KeyEvent.VK_F) {
+													WindowFactory
+															.getFirmFrame()
+															.setVisible(true);
+												} else if (code == KeyEvent.VK_T) {
+													WindowFactory
+															.getItemTypeFrame()
+															.setVisible(true);
+												} else if (code == KeyEvent.VK_I) {
+													WindowFactory
+															.getRentalItemItemFrame()
+															.setVisible(true);
+												} else if (code == KeyEvent.VK_C) {
+													WindowFactory
+															.getClientItemFrame()
+															.setVisible(true);
+												} else if (code == KeyEvent.VK_D) {
+													WindowFactory
+															.getDamageItemFrame()
+															.setVisible(true);
+												} else if (code == KeyEvent.VK_P) {
+													WindowFactory
+															.getPayItemFrame()
+															.setVisible(true);
+												} else if (code == KeyEvent.VK_R) {
+													WindowFactory
+															.getRentalItemFrame()
+															.setVisible(true);
+												} else if (code == KeyEvent.VK_Q) {
+													WindowFactory
+															.getPayTypeItemFrame()
+															.setVisible(true);
+												}
+											}
+										}
+									} else if (code == KeyEvent.VK_ESCAPE) {
+										Application.PRESSED = !Application.PRESSED;
+										if (Application.PRESSED) {
+											dispose();
+										}
+									}
+								}
+							return false;
+						}
+					});
+		} else {
+			KeyboardFocusManager.getCurrentKeyboardFocusManager()
+					.addKeyEventDispatcher(new KeyEventDispatcher() {
+						@Override
+						public boolean dispatchKeyEvent(KeyEvent e) {
+							if (SwingUtilities.getRoot(e.getComponent()) == MainFrame.this)
+								if (MainFrame.this.isVisible()) {
+									int code = e.getKeyCode();
+									boolean ctrlPressed = (e.getModifiers() & KeyEvent.CTRL_MASK) != 0;
+									if (ctrlPressed) {
+										if (code == KeyEvent.VK_J
+												|| code == KeyEvent.VK_E
+												|| code == KeyEvent.VK_Q
+												|| code == KeyEvent.VK_P) {
+											Application.PRESSED = !Application.PRESSED;
+											if (Application.PRESSED) {
+												if (code == KeyEvent.VK_J) {
+													WindowFactory
+															.getJobItemFrame()
+															.setVisible(true);
+												} else if (code == KeyEvent.VK_E) {
+													WindowFactory
+															.getEmployeeItemFrame()
+															.setVisible(true);
+												} else if (code == KeyEvent.VK_Q) {
+													WindowFactory
+															.getPayTypeItemFrame()
+															.setVisible(true);
+												} else if (code == KeyEvent.VK_P) {
+													WindowFactory
+															.getPayItemFrame()
+															.setVisible(true);
+												}
+											}
+										}
+									} else if (code == KeyEvent.VK_ESCAPE) {
+										Application.PRESSED = !Application.PRESSED;
+										if (Application.PRESSED) {
+											dispose();
+										}
+									}
+								}
+							return false;
+						}
+					});
+		}
 	}
 
 	protected void doPay() throws DaoException {

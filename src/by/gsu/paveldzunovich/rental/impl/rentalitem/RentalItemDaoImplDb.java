@@ -100,7 +100,7 @@ public class RentalItemDaoImplDb extends AbstractDaoImplDb<RentalItem>
 
 	@Override
 	public String getDeleteQuery(RentalItem item) {
-		return "exec delete_records_with_key Вещь, " + item.getId();
+		return "delete from Вещь where " + item.getId();
 	}
 
 	@Override
@@ -156,6 +156,34 @@ public class RentalItemDaoImplDb extends AbstractDaoImplDb<RentalItem>
 		} catch (SQLException e) {
 			throw new DaoException(
 					"Ошибка получения отфильтрованного списка вещей", e);
+		}
+	}
+
+	@Override
+	public List<Integer> getFreeItemsIds() throws DaoException {
+		try {
+			Connection cn = null;
+			PreparedStatement st = null;
+			ResultSet rs = null;
+			try {
+				cn = DbConnection.getConnection();
+				st = cn.prepareStatement("select * from free_items_ids()");
+				rs = st.executeQuery();
+
+				List<Integer> result = new ArrayList<Integer>();
+				while (rs.next()) {
+					int id = rs.getInt(1);
+					result.add(id);
+				}
+				return result;
+			} finally {
+				DbConnection.closeResultSets(rs);
+				DbConnection.closeStatements(st);
+				DbConnection.closeConnection(cn);
+			}
+		} catch (SQLException e) {
+			throw new DaoException("Ошибка получения списка свободных вещей.",
+					e);
 		}
 	}
 }

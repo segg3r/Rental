@@ -102,6 +102,7 @@ public class RentalItemFrame extends FilterItemFrame<Rental> {
 			}
 
 		});
+
 		additionalButtonPanel.add(doPay);
 		additionalButtonPanel.add(showPaysButton);
 

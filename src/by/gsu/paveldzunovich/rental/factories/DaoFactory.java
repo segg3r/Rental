@@ -7,6 +7,7 @@ import by.gsu.paveldzunovich.rental.ifaces.IPayDao;
 import by.gsu.paveldzunovich.rental.ifaces.IRentalDao;
 import by.gsu.paveldzunovich.rental.ifaces.IRentalItemDao;
 import by.gsu.paveldzunovich.rental.impl.clients.ClientDaoImplDb;
+import by.gsu.paveldzunovich.rental.impl.damage.DamageDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.employee.EmployeeDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.firm.FirmDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.itemtypes.ItemTypeDaoImplDb;
@@ -14,6 +15,7 @@ import by.gsu.paveldzunovich.rental.impl.job.JobDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.pay.PayDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.rental.RentalDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.rentalitem.RentalItemDaoImplDb;
+import by.gsu.paveldzunovich.rental.model.Damage;
 import by.gsu.paveldzunovich.rental.model.Firm;
 import by.gsu.paveldzunovich.rental.model.ItemType;
 import by.gsu.paveldzunovich.rental.model.Job;
@@ -50,5 +52,9 @@ public class DaoFactory {
 
 	public static IPayDao getPayDao() {
 		return new PayDaoImplDb(getRentalDao());
+	}
+
+	public static IItemDao<Damage> getDamageDao() {
+		return new DamageDaoImplDb();
 	}
 }

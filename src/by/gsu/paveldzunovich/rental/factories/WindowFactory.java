@@ -30,6 +30,7 @@ import by.gsu.paveldzunovich.rental.model.RentalItem;
 import by.gsu.paveldzunovich.rental.ui.ItemFrame;
 import by.gsu.paveldzunovich.rental.ui.filter.FilterItemFrame;
 import by.gsu.paveldzunovich.rental.ui.impl.ClientItemFrame;
+import by.gsu.paveldzunovich.rental.ui.impl.DamageItemFrame;
 import by.gsu.paveldzunovich.rental.ui.impl.EmployeeItemFrame;
 import by.gsu.paveldzunovich.rental.ui.impl.FirmItemFrame;
 import by.gsu.paveldzunovich.rental.ui.impl.ItemTypeItemFrame;
@@ -72,8 +73,8 @@ public class WindowFactory {
 				new ClientUiStrings()));
 	}
 
-	public static ItemFrame<Damage> getDamageItemFrame() {
-		return WindowBuilder.build(new ItemFrame<Damage>(new DamageDaoImplDb(),
+	public static DamageItemFrame getDamageItemFrame() {
+		return WindowBuilder.build(new DamageItemFrame(new DamageDaoImplDb(),
 				new DamageUiStrings()));
 	}
 

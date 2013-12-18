@@ -31,7 +31,9 @@ import by.gsu.paveldzunovich.rental.impl.filterfields.stringfilterfields.Invento
 import by.gsu.paveldzunovich.rental.impl.filters.FirmItemTypeFilter;
 import by.gsu.paveldzunovich.rental.impl.firm.FirmDaoImplDb;
 import by.gsu.paveldzunovich.rental.impl.itemtypes.ItemTypeDaoImplDb;
+import by.gsu.paveldzunovich.rental.impl.pay.PayUiStrings;
 import by.gsu.paveldzunovich.rental.impl.rental.RentalUiStrings;
+import by.gsu.paveldzunovich.rental.model.Damage;
 import by.gsu.paveldzunovich.rental.model.Firm;
 import by.gsu.paveldzunovich.rental.model.ItemType;
 import by.gsu.paveldzunovich.rental.model.Rental;
@@ -87,9 +89,57 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 				doRental();
 			}
 		});
+
+		JButton addDamageButton = new JButton("Добавить повреждение");
+		addDamageButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				addDamage();
+			}
+		});
+
+		JButton showDamage = new JButton("Показать повреждения");
+		showDamage.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				showDamages();
+			}
+		});
 		panel.add(doRental);
 		panel.add(showRentalsButton);
+
+		panel.add(addDamageButton);
+		panel.add(showDamage);
 		return panel;
+	}
+
+	protected void showDamages() {
+		try {
+			RentalItem item = getItemHolder().getSelectedItem();
+			DamageItemFrame damageItemFrame = WindowFactory
+					.getDamageItemFrame();
+			damageItemFrame.getRentalItemFilter().setSelectedItem(item);
+			damageItemFrame.setVisible(true);
+		} catch (UiException e) {
+			UiErrorHandler.handleError(e.getMessage());
+		}
+	}
+
+	protected void addDamage() {
+		try {
+			Damage damage = new Damage();
+			damage.setRentalItem(getItemHolder().getSelectedItem());
+
+			WindowBuilder.build(
+					new ItemDialog<Damage>(RentalItemItemFrame.this,
+							new PayUiStrings().getAddItemHeader(), DaoFactory
+									.getDamageDao().getItemTableRepresentation(
+											damage))).setVisible(true);
+		} catch (UiException | DaoException ex) {
+			UiErrorHandler.handleError(ex.getMessage());
+		}
 	}
 
 	protected void doRental() {
@@ -206,13 +256,19 @@ public class RentalItemItemFrame extends FilterItemFrame<RentalItem> {
 								boolean ctrlPressed = (e.getModifiers() & KeyEvent.CTRL_MASK) != 0;
 								if (ctrlPressed) {
 									if (code == KeyEvent.VK_1
-											|| code == KeyEvent.VK_2) {
+											|| code == KeyEvent.VK_2
+											|| code == KeyEvent.VK_3
+											|| code == KeyEvent.VK_4) {
 										Application.PRESSED = !Application.PRESSED;
 										if (Application.PRESSED) {
 											if (code == KeyEvent.VK_1) {
 												doRental();
 											} else if (code == KeyEvent.VK_2) {
 												showRentals();
+											} else if (code == KeyEvent.VK_3) {
+												addDamage();
+											} else if (code == KeyEvent.VK_4) {
+												showDamages();
 											}
 										}
 									}

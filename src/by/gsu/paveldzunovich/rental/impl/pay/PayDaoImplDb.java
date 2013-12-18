@@ -72,6 +72,7 @@ public class PayDaoImplDb extends AbstractDaoImplDb<Pay> implements IPayDao {
 
 	@Override
 	public String getInsertQuery(Pay item) {
+		System.out.println(item);
 		return "insert into Оплата(idСпособаОплаты, idПроката, Сумма, Дата) values("
 				+ item.getPayType().getId()
 				+ ", "

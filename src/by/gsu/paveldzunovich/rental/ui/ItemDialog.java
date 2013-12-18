@@ -148,6 +148,7 @@ public class ItemDialog<T> extends JDialog implements IItemWindow {
 								} else if (code == KeyEvent.VK_ENTER) {
 									Application.PRESSED = !Application.PRESSED;
 									if (Application.PRESSED) {
+										System.out.println("PRESSED");
 										okAction();
 									}
 								}
